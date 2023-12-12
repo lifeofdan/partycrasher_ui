@@ -1,42 +1,73 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-    <example-component
-      title="Example component"
-      active
-      :todos="todos"
-      :meta="meta"
-    ></example-component>
+  <q-page>
+    <div class="row items-center justify-evenly q-my-md">
+      <div class="col q-mx-md">
+        <q-input outlined label="search" v-model="searchText" />
+      </div>
+    </div>
+    <div class="row items-center content-between">
+      <template v-for="(n, index) in 5" :key="index">
+        <q-card class="my-card q-mx-md q-my-md">
+          <q-img src="https://cdn.quasar.dev/img/parallax2.jpg">
+            <div class="absolute-bottom text-center">
+              <q-btn color="primary">Queue</q-btn>
+            </div>
+          </q-img>
+
+          <q-card-section>
+            <div class="text-h6">Dance party</div>
+            <div class="text-subtitle2">The Shoo Bops</div>
+          </q-card-section>
+        </q-card>
+      </template>
+    </div>
+    <div class="row q-my-md absolute-bottom">
+      <div class="col text-center q-mx-md q-mb-md">
+        <q-btn color="primary" class="full-width" label="Show queue" @click="show(false)" />
+      </div>
+    </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { Todo, Meta } from 'components/models';
-import ExampleComponent from 'components/ExampleComponent.vue';
-import { ref } from 'vue';
+import { ref } from 'vue'
+import { useQuasar } from 'quasar'
 
-const todos = ref<Todo[]>([
-  {
-    id: 1,
-    content: 'ct1'
-  },
-  {
-    id: 2,
-    content: 'ct2'
-  },
-  {
-    id: 3,
-    content: 'ct3'
-  },
-  {
-    id: 4,
-    content: 'ct4'
-  },
-  {
-    id: 5,
-    content: 'ct5'
-  }
-]);
-const meta = ref<Meta>({
-  totalCount: 1200
-});
+const searchText = ref('')
+const $q = useQuasar()
+
+function show (grid: boolean) {
+  $q.bottomSheet({
+    message: 'Playlist',
+    grid,
+    actions: [
+      {
+        label: 'Dance party',
+        img: 'https://cdn.quasar.dev/img/parallax2.jpg',
+        id: 'drive'
+      },
+      {
+        label: 'Dance party',
+        img: 'https://cdn.quasar.dev/img/parallax2.jpg',
+        id: 'keep'
+      },
+      {
+        label: 'Dance party',
+        img: 'https://cdn.quasar.dev/img/parallax2.jpg',
+        id: 'calendar'
+      },
+      {
+        label: 'Dance party',
+        img: 'https://cdn.quasar.dev/img/parallax2.jpg',
+        id: 'calendar'
+      }
+    ]
+  }).onOk(action => {
+    // console.log('Action chosen:', action.id)
+  }).onCancel(() => {
+    // console.log('Dismissed')
+  }).onDismiss(() => {
+    // console.log('I am triggered on both OK and Cancel')
+  })
+}
 </script>
