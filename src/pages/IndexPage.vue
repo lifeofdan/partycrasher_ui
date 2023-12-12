@@ -62,7 +62,7 @@ function show (grid: boolean) {
         id: 'calendar'
       }
     ]
-  }).onOk(action => {
+  }).onOk(() => {
     // console.log('Action chosen:', action.id)
   }).onCancel(() => {
     // console.log('Dismissed')
