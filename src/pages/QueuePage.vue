@@ -2,17 +2,29 @@
   <q-page>
     <div class="row items-center justify-evenly q-my-md">
       <div class="col q-mx-md">
-        <q-input outlined label="search" v-model="searchText" />
+        <q-input
+          v-model="searchText"
+          outlined
+          label="search"
+        />
       </div>
     </div>
     <div class="row items-center content-between">
-      <template v-for="(n, index) in 5" :key="index">
+      <template
+        v-for="(n, index) in 5"
+        :key="index"
+      >
         <MusicCard type="track" />
       </template>
     </div>
     <div class="row q-my-md absolute-bottom">
       <div class="col text-center q-mx-md q-mb-md">
-        <q-btn color="primary" class="full-width" label="Show queue" @click="show(false)" />
+        <q-btn
+          color="primary"
+          class="full-width"
+          label="Show queue"
+          @click="show(false)"
+        />
       </div>
     </div>
   </q-page>
