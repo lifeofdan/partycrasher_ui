@@ -50,7 +50,7 @@ function onSubmit () {
 function sendTokenAndValidate () {
   // do api call
 
-  return true
+  return false
 }
 
 function onTokenUpdate () {
