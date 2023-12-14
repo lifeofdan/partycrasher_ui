@@ -7,18 +7,7 @@
     </div>
     <div class="row items-center content-between">
       <template v-for="(n, index) in 5" :key="index">
-        <q-card class="my-card q-mx-md q-my-md">
-          <q-img src="https://cdn.quasar.dev/img/parallax2.jpg">
-            <div class="absolute-bottom text-center">
-              <q-btn color="primary">Queue</q-btn>
-            </div>
-          </q-img>
-
-          <q-card-section>
-            <div class="text-h6">Dance party</div>
-            <div class="text-subtitle2">The Shoo Bops</div>
-          </q-card-section>
-        </q-card>
+        <MusicCard type="track" />
       </template>
     </div>
     <div class="row q-my-md absolute-bottom">
@@ -32,6 +21,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useQuasar } from 'quasar'
+import MusicCard from 'src/components/MusicCard.vue'
 
 const searchText = ref('')
 const $q = useQuasar()
