@@ -33,8 +33,8 @@ const router = useRouter()
 const token = ref('')
 const isInvalidToken = ref(false)
 
-function onSubmit () {
-  isInvalidToken.value = sendTokenAndValidate()
+async function onSubmit () {
+  isInvalidToken.value = await sendTokenAndValidate()
 
   if (isInvalidToken.value) {
     return
@@ -47,8 +47,18 @@ function onSubmit () {
   }
 }
 
-function sendTokenAndValidate () {
+async function sendTokenAndValidate () {
   // do api call
+  const header = new Headers({
+    'Cache-Control': 'no-cache',
+    Authorization: `Bearer ${token.value}`,
+    'Content-Type': 'application/json'
+  })
+  const response = fetch('http://localhost:8080/api/v1/clients/me', {
+    headers: header
+  })
+
+  console.log(response)
 
   return false
 }
