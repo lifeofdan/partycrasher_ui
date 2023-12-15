@@ -14,7 +14,7 @@
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
   "[typescript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
   },
   "[vue]": {
     "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
