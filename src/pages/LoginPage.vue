@@ -54,7 +54,7 @@ async function sendTokenAndValidate () {
     Authorization: `Bearer ${token.value}`,
     'Content-Type': 'application/json'
   })
-  const response = fetch('http://localhost:8080/api/v1/clients/me', {
+  const response = fetch('/api/v1/clients/me', {
     headers: header
   })
 
