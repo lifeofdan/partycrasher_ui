@@ -26,41 +26,37 @@
 </template>
 
 <script setup lang="ts">
+import { LocalStorage } from 'quasar'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { api } from 'src/api/client'
 
 const router = useRouter()
 const token = ref('')
 const isInvalidToken = ref(false)
 
 async function onSubmit () {
-  isInvalidToken.value = await sendTokenAndValidate()
+  await sendTokenValidateAndRouterPush()
+}
 
-  if (isInvalidToken.value) {
+async function sendTokenValidateAndRouterPush () {
+  LocalStorage.remove('pc_token')
+  LocalStorage.set('pc_token', token.value)
+
+  const response = await api.getMe()
+
+  if (!response.success) {
+    isInvalidToken.value = true
+    LocalStorage.remove('pc_token')
     return
   }
 
-  if (token.value === 'admin') {
+  if (response.data?.role === 'admin') {
     router.push('/playlists')
-  } else {
-    router.push('/queue')
+    return
   }
-}
 
-async function sendTokenAndValidate () {
-  // do api call
-  const header = new Headers({
-    'Cache-Control': 'no-cache',
-    Authorization: `Bearer ${token.value}`,
-    'Content-Type': 'application/json'
-  })
-  const response = fetch('/api/v1/clients/me', {
-    headers: header
-  })
-
-  console.log(response)
-
-  return false
+  router.push('/queue')
 }
 
 function onTokenUpdate () {
