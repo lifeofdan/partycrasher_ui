@@ -4,6 +4,14 @@ const defaultIResponse = {
   success: false,
   message: 'url not found'
 }
+const defaultIResponsePaginated = {
+  page: [],
+  paginators: {
+    current: '',
+    next: '',
+    previous: ''
+  }
+}
 
 export interface IResponse<T> {
   data?: T
@@ -24,8 +32,21 @@ export interface IGetPlaylistsData {
   description: string
 }
 
-export interface IGetPlaylistsPaginated {
-  page: IGetPlaylistsData[]
+export interface IGetTrackData {
+  id: string
+  title: string
+  path: string
+  metadata: {
+    title: string
+    artist: string
+    album: string
+    genre: string
+    track_number: string
+  }
+}
+
+export interface IResponsePaginated<T> {
+  page: T[]
   paginators: {
     current: string
     next: string
@@ -54,19 +75,22 @@ export const api = {
     return await response.json()
   },
 
-  getPlaylists: async (): Promise<IGetPlaylistsPaginated> => {
+  getPlaylists: async (): Promise<IResponsePaginated<IGetPlaylistsData>> => {
     if (API_URL === undefined) {
-      return {
-        page: [],
-        paginators: {
-          current: '',
-          next: '',
-          previous: ''
-        }
-      }
+      return defaultIResponsePaginated
     }
 
     const response = await fetch(`${API_URL}/api/v1/playlists`, {
+      headers: setTokenHeader()
+    })
+
+    return await response.json()
+  },
+
+  getTracks: async (): Promise<IResponsePaginated<IGetTrackData>> => {
+    if (API_URL === undefined) return defaultIResponsePaginated
+
+    const response = await fetch(`${API_URL}/api/v1/tracks`, {
       headers: setTokenHeader()
     })
 
