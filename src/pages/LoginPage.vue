@@ -29,7 +29,7 @@
 import { LocalStorage } from 'quasar'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { api } from 'src/api/client'
+import { useAuthStore } from 'src/stores/auth'
 
 const router = useRouter()
 const token = ref('')
@@ -43,15 +43,15 @@ async function sendTokenValidateAndRouterPush () {
   LocalStorage.remove('pc_token')
   LocalStorage.set('pc_token', token.value)
 
-  const response = await api.getMe()
+  const response = await useAuthStore().fetchMe()
 
-  if (!response.success) {
+  if (!response) {
     isInvalidToken.value = true
     LocalStorage.remove('pc_token')
     return
   }
 
-  if (response.data?.role === 'admin') {
+  if (response?.role === 'admin') {
     router.push('/playlists')
     return
   }
