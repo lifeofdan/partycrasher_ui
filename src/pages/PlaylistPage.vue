@@ -11,13 +11,12 @@
     </div>
     <template v-if="playlistsStore.state.defaultPlaylist">
       <div class="row items-center content-between">
-        <div class="col col-sm-6">
-          <MusicCard
-            type="playlist"
-            :title="playlistsStore.state.defaultPlaylist?.name ?? ''"
-            :sub-title="playlistsStore.state.defaultPlaylist?.description ?? ''"
-          />
-        </div>
+        <MusicCard
+          style="min-width: 160px; max-width: 320px"
+          type="playlist"
+          :title="playlistsStore.state.defaultPlaylist?.name ?? ''"
+          :sub-title="playlistsStore.state.defaultPlaylist?.description ?? ''"
+        />
       </div>
     </template>
     <div class="row q-my-md absolute-bottom justify-center">
