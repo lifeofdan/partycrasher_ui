@@ -22,14 +22,16 @@
       <EssentialLink
         title="Login"
         caption="Change user token"
-        link="/"
+        link="/login"
       />
       <EssentialLink
+        v-if="me?.role === 'admin'"
         title="Playlists"
         caption="Choose a playlist"
         link="/playlists"
       />
       <EssentialLink
+        v-if="me?.role === 'admin' || me?.role === 'user'"
         title="Queue"
         caption="Add tracks to play"
         link="/queue"
@@ -44,11 +46,29 @@
 
 <script lang="ts" setup>
 import EssentialLink from 'src/components/EssentialLink.vue'
-import { ref } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { useAuthStore } from 'src/stores/auth'
+import { TGetMeData } from 'src/api/client'
 
 const leftDrawerOpen = ref(false)
+const authStore = useAuthStore()
+const me = ref<TGetMeData | null>(null)
 
 function toggleLeftDrawer () {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
+
+watch(
+  () => authStore.state.me,
+  (newMe) => {
+    console.log('this changed')
+    me.value = newMe
+  },
+  { deep: true }
+)
+
+onMounted(() => {
+  me.value = authStore.state.me
+})
+
 </script>
