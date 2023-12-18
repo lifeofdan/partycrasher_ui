@@ -11,10 +11,15 @@
     </div>
     <div class="row items-center content-between">
       <template
-        v-for="(n, index) in 5"
-        :key="index"
+        v-for="track in queueStore.state.tracks"
+        :key="track.id"
       >
-        <MusicCard type="track" />
+        <MusicCard
+          style="min-width: 160px; max-width: 320px;"
+          type="track"
+          :title="track.title"
+          :description="track.metadata.artist"
+        />
       </template>
     </div>
     <div class="row q-my-md absolute-bottom">
@@ -31,12 +36,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import MusicCard from 'src/components/MusicCard.vue'
+import { useQueueStore } from 'src/stores/queue'
 
 const searchText = ref('')
 const $q = useQuasar()
+const queueStore = useQueueStore()
 
 function show (grid: boolean) {
   $q.bottomSheet({
@@ -72,4 +79,8 @@ function show (grid: boolean) {
     // console.log('I am triggered on both OK and Cancel')
   })
 }
+
+onMounted(async () => {
+  await queueStore.fetchTracks()
+})
 </script>
