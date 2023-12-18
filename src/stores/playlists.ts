@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { IGetPlaylistsPaginated, IGetPlaylistsData, api } from 'src/api/client'
+import { IResponsePaginated, IGetPlaylistsData, api } from 'src/api/client'
 import { reactive, ref } from 'vue'
 
 export const usePlaylistsStore = defineStore('playlists', () => {
@@ -13,7 +13,7 @@ export const usePlaylistsStore = defineStore('playlists', () => {
       return defaultPlaylist.value
     },
 
-    fetchPlaylists: async (): Promise<IGetPlaylistsPaginated | null> => {
+    fetchPlaylists: async (): Promise<IResponsePaginated<IGetPlaylistsData> | null> => {
       const response = await api.getPlaylists()
 
       return response ?? null

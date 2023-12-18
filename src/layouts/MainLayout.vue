@@ -48,11 +48,11 @@
 import EssentialLink from 'src/components/EssentialLink.vue'
 import { ref, watch, onMounted } from 'vue'
 import { useAuthStore } from 'src/stores/auth'
-import { TGetMeData } from 'src/api/client'
+import { IGetMeData } from 'src/api/client'
 
 const leftDrawerOpen = ref(false)
 const authStore = useAuthStore()
-const me = ref<TGetMeData | null>(null)
+const me = ref<IGetMeData | null>(null)
 
 function toggleLeftDrawer () {
   leftDrawerOpen.value = !leftDrawerOpen.value
