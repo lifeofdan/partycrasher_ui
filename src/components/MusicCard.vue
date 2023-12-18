@@ -19,17 +19,21 @@
 
     <q-card-section>
       <div class="text-h6">
-        Dance party
+        {{ title }}
       </div>
       <div class="text-subtitle2">
-        The Shoo Bops
+        {{ subTitle }}
       </div>
     </q-card-section>
   </q-card>
 </template>
 
 <script setup lang="ts">
-defineProps<{type: 'track' | 'playlist'}>()
+withDefaults(defineProps<{ type: 'track' | 'playlist', title: string, subTitle: string }>(), {
+  type: 'track',
+  title: '',
+  subTitle: ''
+})
 </script>
 
 <style scoped></style>

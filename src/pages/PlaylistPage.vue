@@ -9,14 +9,17 @@
         />
       </div>
     </div>
-    <div class="row items-center content-between">
-      <template
-        v-for="(n, index) in 5"
-        :key="index"
-      >
-        <MusicCard type="playlist" />
-      </template>
-    </div>
+    <template v-if="playlistsStore.state.defaultPlaylist">
+      <div class="row items-center content-between">
+        <div class="col col-sm-6">
+          <MusicCard
+            type="playlist"
+            :title="playlistsStore.state.defaultPlaylist?.name ?? ''"
+            :sub-title="playlistsStore.state.defaultPlaylist?.description ?? ''"
+          />
+        </div>
+      </div>
+    </template>
     <div class="row q-my-md absolute-bottom justify-center">
       <div class="col">
         <div class="row justify-center q-mb-sm">
@@ -50,11 +53,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import MusicCard from 'src/components/MusicCard.vue'
+import { usePlaylistsStore } from 'src/stores/playlists'
 
+const playlistsStore = usePlaylistsStore()
 const searchText = ref('')
 
+onMounted(async () => {
+  await playlistsStore.fetchPlaylistsDefault()
+})
 </script>
 
 <style scoped>

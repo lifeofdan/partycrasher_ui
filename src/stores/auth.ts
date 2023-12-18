@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia'
-import { TGetMeData, api } from 'src/api/client'
+import { IGetMeData, api } from 'src/api/client'
 import { reactive, ref } from 'vue'
 
 export const useAuthStore = defineStore('auth', () => {
-  const me = ref<TGetMeData | null>(null)
+  const me = ref<IGetMeData | null>(null)
 
   const actions = {
-    fetchMe: async (): Promise<TGetMeData | null> => {
+    fetchMe: async (): Promise<IGetMeData | null> => {
       const response = await api.getMe()
 
       me.value = response.data ?? null
