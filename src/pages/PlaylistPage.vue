@@ -154,7 +154,7 @@ onMounted(async () => {
   if (!playlistsStore.state.defaultPlaylist) return
   await playlistsStore.fetchPlaylistTracks(playlistsStore.state.defaultPlaylist.id)
 
-  if (!playlistsStore.state.playlistTracks) return
+  if (!playlistsStore.state.playlistTracks || !playlistsStore.state.playlistTracks.length) return
   trackAudio.src = buildTrackUrl(playlistsStore.state.playlistTracks[0].id)
 })
 </script>
