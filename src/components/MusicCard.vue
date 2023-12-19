@@ -2,18 +2,35 @@
   <q-card class="my-card q-mx-md q-my-md">
     <q-img src="https://cdn.quasar.dev/img/parallax2.jpg">
       <div class="absolute-bottom text-center">
-        <q-btn
+        <template
           v-if="type === 'track'"
-          color="primary"
         >
-          Queue
-        </q-btn>
-        <q-btn
+          <q-btn
+            color="primary"
+          >
+            Queue
+          </q-btn>
+        </template>
+        <template
           v-if="type === 'playlist'"
-          color="primary"
         >
-          Play
-        </q-btn>
+          <template v-if="playing">
+            <q-btn
+              color="primary"
+              @click="onPause()"
+            >
+              Pause
+            </q-btn>
+          </template>
+          <template v-else>
+            <q-btn
+              color="primary"
+              @click="onPlay()"
+            >
+              Play
+            </q-btn>
+          </template>
+        </template>
       </div>
     </q-img>
 
@@ -29,11 +46,21 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{ type: 'track' | 'playlist', title: string, subTitle: string }>(), {
+withDefaults(defineProps<{ type: 'track' | 'playlist', title: string, subTitle: string, playing: boolean }>(), {
   type: 'track',
   title: '',
-  subTitle: ''
+  subTitle: '',
+  playing: false
 })
+const emit = defineEmits(['play', 'pause'])
+
+function onPlay () {
+  emit('play')
+}
+
+function onPause () {
+  emit('pause')
+}
 </script>
 
 <style scoped></style>
