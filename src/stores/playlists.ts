@@ -22,7 +22,6 @@ export const usePlaylistsStore = defineStore('playlists', () => {
 
     fetchPlaylistTracks: async (playlistId: string): Promise<IGetPlaylistTracks[] | null> => {
       const response = await api.getPlaylistTracks(playlistId)
-      console.log(response)
 
       playlistTracks.value = response.data ?? null
 
