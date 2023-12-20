@@ -3,12 +3,31 @@ import { RouteRecordRaw } from 'vue-router'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    component: async () => await import('layouts/LoginLayout.vue'),
     children: [
       { path: '', redirect: '/login' },
-      { name: 'login', path: 'login', component: () => import('pages/LoginPage.vue') },
-      { name: 'queue', path: 'queue', component: () => import('pages/QueuePage.vue') },
-      { name: 'playlists', path: 'playlists', component: () => import('pages/PlaylistPage.vue') }
+      { name: 'login', path: 'login', meta: { title: 'Login' }, component: async () => await import('pages/LoginPage.vue') }
+    ]
+  },
+  {
+    path: '/app',
+    component: async () => await import('layouts/MainLayout.vue'),
+    children: [
+      { name: 'app.queue', path: 'queue', meta: { title: 'Queue' }, component: async () => await import('pages/QueuePage.vue') },
+      {
+        component: async () => await import('pages/PlaylistsPage.vue'),
+        name: 'app.playlists',
+        path: 'playlists',
+        meta: { title: 'Playlists' },
+        children: [
+          {
+            component: async () => await import('pages/playlists/PlaylistPage.vue'),
+            name: 'app.playlist',
+            path: ':id',
+            meta: { title: 'Playlist', child: true }
+          }
+        ]
+      }
     ]
   },
 
@@ -16,7 +35,7 @@ const routes: RouteRecordRaw[] = [
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue')
+    component: async () => await import('pages/ErrorNotFound.vue')
   }
 ]
 
