@@ -1,66 +1,59 @@
 <template>
-  <q-card class="my-card q-mx-md q-my-md">
-    <q-img src="https://cdn.quasar.dev/img/parallax2.jpg">
-      <div class="absolute-bottom text-center">
-        <template
-          v-if="type === 'track'"
-        >
-          <q-btn
-            color="primary"
-          >
-            Queue
-          </q-btn>
-        </template>
-        <template
-          v-if="type === 'playlist'"
-        >
-          <template v-if="playing">
-            <q-btn
-              color="primary"
-              @click="onPause()"
-            >
-              Pause
-            </q-btn>
-          </template>
-          <template v-else>
-            <q-btn
-              color="primary"
-              @click="onPlay()"
-            >
-              Play
-            </q-btn>
-          </template>
-        </template>
-      </div>
-    </q-img>
+  <router-link
+    v-if="id && routeName"
+    :to="{name: routeName, params: { id: id }}"
+    class="text-dark"
+    style="text-decoration: none;"
+  >
+    <q-card class="my-card q-mx-md q-my-md">
+      <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" />
 
-    <q-card-section>
-      <div class="text-h6">
-        {{ title }}
-      </div>
-      <div class="text-subtitle2">
-        {{ subTitle }}
-      </div>
-    </q-card-section>
-  </q-card>
+      <q-card-section>
+        <div class="text-h6">
+          {{ title }}
+        </div>
+        <div class="text-subtitle2">
+          {{ subTitle }}
+        </div>
+      </q-card-section>
+    </q-card>
+  </router-link>
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{ type: 'track' | 'playlist', title: string, subTitle: string, playing: boolean }>(), {
-  type: 'track',
-  title: '',
-  subTitle: '',
-  playing: false
+import { IGetPlaylistsData, IGetTrackData } from 'src/api/client'
+import { ref, toRefs, onMounted } from 'vue'
+
+const props = withDefaults(
+  defineProps<{
+    title: string,
+    subTitle: string,
+    playlist?: IGetPlaylistsData,
+    track?: IGetTrackData
+  }>(),
+  {
+    title: '',
+    subTitle: '',
+    playlist: undefined,
+    track: undefined
+  })
+
+const { playlist, track } = toRefs(props)
+const id = ref('')
+const routeName = ref('')
+
+onMounted(() => {
+  if (playlist.value) {
+    id.value = playlist.value.id
+    routeName.value = 'app.playlist'
+    return
+  }
+
+  if (track.value) {
+    id.value = track.value.id
+    routeName.value = 'app.track'
+  }
 })
-const emit = defineEmits(['play', 'pause'])
-
-function onPlay () {
-  emit('play')
-}
-
-function onPause () {
-  emit('pause')
-}
 </script>
 
 <style scoped></style>

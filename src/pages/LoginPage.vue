@@ -52,11 +52,11 @@ async function sendTokenValidateAndRouterPush () {
   }
 
   if (response?.role === 'admin') {
-    router.push('/playlists')
+    router.push({ name: 'app.playlists' })
     return
   }
 
-  router.push('/queue')
+  router.push({ name: 'app.queue' })
 }
 
 function onTokenUpdate () {

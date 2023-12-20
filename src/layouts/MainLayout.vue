@@ -1,18 +1,56 @@
 <template>
-  <q-layout view="hHh lpR fFf">
-    <q-header class="bg-primary text-white">
+  <q-layout
+    view="lHh lpr lFf"
+    container
+    class="shadow-2 rounded-borders"
+    style="height: 100vh"
+  >
+    <q-header
+      class="bg-white text-primary"
+    >
       <q-toolbar>
-        <q-btn
-          dense
-          flat
-          round
-          icon="menu"
-          @click="toggleLeftDrawer"
-        />
-
-        <q-toolbar-title> party crasher </q-toolbar-title>
+        <template v-if="route.meta.child">
+          <q-btn
+            round
+            flat
+            icon="arrow_back_ios"
+            :to="$router.options.history.state.back"
+          />
+        </template>
+        <q-toolbar-title>
+          {{ pageTitle }}
+        </q-toolbar-title>
       </q-toolbar>
     </q-header>
+
+    <q-footer class="bg-transparent">
+      <MusicPlayer v-show="musicPlayerStore.state.showPlayer" />
+      <q-tabs
+        no-caps
+        active-color="primary"
+        indicator-color="transparent"
+        class="text-grey-8 bg-grey-3 text-primary"
+        :style="!musicPlayerStore.state.showPlayer ? 'border-top: 1px solid rgba(0, 0, 0, 0.12)' : ''"
+      >
+        <q-route-tab
+          v-if="me?.role === 'admin'"
+          :to="{name: 'app.playlists'}"
+          label="Playlists"
+          icon="play_circle"
+        />
+        <q-route-tab
+          v-if="me?.role === 'admin' || me?.role === 'user'"
+          :to="{name:'app.queue'}"
+          label="Queue"
+          icon="queue_music"
+        />
+        <q-route-tab
+          :to="{name: 'login'}"
+          label="Logout"
+          icon="logout"
+        />
+      </q-tabs>
+    </q-footer>
 
     <q-drawer
       v-model="leftDrawerOpen"
@@ -22,19 +60,19 @@
       <EssentialLink
         title="Login"
         caption="Change user token"
-        link="/login"
+        :to="{name: 'login'}"
       />
       <EssentialLink
         v-if="me?.role === 'admin'"
         title="Playlists"
         caption="Choose a playlist"
-        link="/playlists"
+        :to="{name: 'app.playlists'}"
       />
       <EssentialLink
         v-if="me?.role === 'admin' || me?.role === 'user'"
         title="Queue"
         caption="Add tracks to play"
-        link="/queue"
+        :to="{name: 'app.queue'}"
       />
     </q-drawer>
 
@@ -49,10 +87,18 @@ import EssentialLink from 'src/components/EssentialLink.vue'
 import { ref, watch, onMounted } from 'vue'
 import { useAuthStore } from 'src/stores/auth'
 import { IGetMeData } from 'src/api/client'
+import { useRoute } from 'vue-router'
+import { useMusicPlayerStore } from 'src/stores/musicPlayer'
+import MusicPlayer from 'src/components/MusicPlayer.vue'
+import { storeToRefs } from 'pinia'
 
+const route = useRoute()
+const musicPlayerStore = useMusicPlayerStore()
+const { state } = storeToRefs(musicPlayerStore)
 const leftDrawerOpen = ref(false)
 const authStore = useAuthStore()
 const me = ref<IGetMeData | null>(null)
+const pageTitle = ref(route.meta.title as string)
 
 function toggleLeftDrawer () {
   leftDrawerOpen.value = !leftDrawerOpen.value
@@ -61,7 +107,6 @@ function toggleLeftDrawer () {
 watch(
   () => authStore.state.me,
   (newMe) => {
-    console.log('this changed')
     me.value = newMe
   },
   { deep: true }
