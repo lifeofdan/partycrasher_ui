@@ -1,18 +1,3 @@
-const API_URL = process.env.API_URL
-const defaultIResponse = {
-  data: undefined,
-  success: false,
-  message: 'url not found'
-}
-const defaultIResponsePaginated = {
-  page: [],
-  paginators: {
-    current: '',
-    next: '',
-    previous: ''
-  }
-}
-
 export interface IResponse<T> {
   data?: T
   success: boolean
@@ -68,9 +53,7 @@ export interface IResponsePaginated<T> {
 
 export const api = {
   getMe: async (): Promise<IResponse<IGetMeData>> => {
-    if (API_URL === undefined) return defaultIResponse
-
-    const response = await fetch(`${API_URL}/api/v1/clients/me`, {
+    const response = await fetch('/api/v1/clients/me', {
       headers: setTokenHeader()
     })
 
@@ -78,9 +61,7 @@ export const api = {
   },
 
   getPlaylistsDefault: async (): Promise<IResponse<IGetPlaylistsData>> => {
-    if (API_URL === undefined) return defaultIResponse
-
-    const response = await fetch(`${API_URL}/api/v1/playlists/default`, {
+    const response = await fetch('/api/v1/playlists/default', {
       headers: setTokenHeader()
     })
 
@@ -88,11 +69,7 @@ export const api = {
   },
 
   getPlaylists: async (): Promise<IResponsePaginated<IGetPlaylistsData>> => {
-    if (API_URL === undefined) {
-      return defaultIResponsePaginated
-    }
-
-    const response = await fetch(`${API_URL}/api/v1/playlists`, {
+    const response = await fetch('/api/v1/playlists', {
       headers: setTokenHeader()
     })
 
@@ -100,9 +77,7 @@ export const api = {
   },
 
   getPlaylist: async (playlistId: string): Promise<IResponse<IGetPlaylistsData>> => {
-    if (API_URL === undefined) return defaultIResponse
-
-    const response = await fetch(`${API_URL}/api/v1/playlists/${playlistId}`, {
+    const response = await fetch(`/api/v1/playlists/${playlistId}`, {
       headers: setTokenHeader()
     })
 
@@ -110,9 +85,7 @@ export const api = {
   },
 
   getTracks: async (): Promise<IResponsePaginated<IGetTrackData>> => {
-    if (API_URL === undefined) return defaultIResponsePaginated
-
-    const response = await fetch(`${API_URL}/api/v1/tracks`, {
+    const response = await fetch('/api/v1/tracks', {
       headers: setTokenHeader()
     })
 
@@ -120,9 +93,7 @@ export const api = {
   },
 
   getPlaylistTracks: async (playlistId: string): Promise<IResponse<IGetPlaylistTracks[]>> => {
-    if (API_URL === undefined) return defaultIResponse
-
-    const response = await fetch(`${API_URL}/api/v1/tracks/playlist/${playlistId}`, {
+    const response = await fetch(`/api/v1/tracks/playlist/${playlistId}`, {
       headers: setTokenHeader()
     })
 
