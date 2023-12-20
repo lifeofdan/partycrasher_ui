@@ -55,6 +55,7 @@ module.exports = configure(
           node: 'node16'
         },
 
+        publicPath: '/_ui',
         vueRouterMode: 'hash', // available values: 'hash', 'history'
         // vueRouterBase,
         // vueDevtools,
