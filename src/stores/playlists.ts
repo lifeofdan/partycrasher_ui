@@ -20,6 +20,12 @@ export const usePlaylistsStore = defineStore('playlists', () => {
       return response ?? null
     },
 
+    fetchPlaylist: async (playlistId: string): Promise<IGetPlaylistsData | null> => {
+      const response = await api.getPlaylist(playlistId)
+
+      return response.data ?? null
+    },
+
     fetchPlaylistTracks: async (playlistId: string): Promise<IGetPlaylistTracks[] | null> => {
       const response = await api.getPlaylistTracks(playlistId)
 
