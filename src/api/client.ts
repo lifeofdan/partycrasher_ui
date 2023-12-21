@@ -92,6 +92,14 @@ export const api = {
     return await response.json()
   },
 
+  getTrack: async (id: string): Promise<IResponse<IGetTrackData>> => {
+    const response = await fetch(`/api/v1/tracks/${id}`, {
+      headers: setTokenHeader()
+    })
+
+    return await response.json()
+  },
+
   getPlaylistTracks: async (playlistId: string): Promise<IResponse<IGetPlaylistTracks[]>> => {
     const response = await fetch(`/api/v1/tracks/playlist/${playlistId}`, {
       headers: setTokenHeader()
