@@ -1,42 +1,53 @@
-import { IResponse, IResponsePaginated, Paginator, makeRequestInit } from '../client'
+import {
+  IResponse,
+  IResponsePaginated,
+  Paginator,
+  makeRequestInit
+} from '../client'
 
 export class BaseEntity {
-  private endpoint = ''
+  private readonly endpoint: string = ''
   // eslint-disable-next-line space-before-function-paren
-  constructor(endpoint: string) {
+  constructor (endpoint: string) {
     this.endpoint = endpoint
   }
 
-  protected async doGet<R> (to: string): Promise<IResponse<R>> {
+  protected async doGet<R> (to: string | null): Promise<IResponse<R>> {
+    const url = this.endpoint + (typeof to === 'string' ? to : '')
+    const response = await fetch(`${url}`, makeRequestInit('GET'))
+    return await response.json()
+  }
+
+  public async doGetBlob (to: string | null): Promise<Blob> {
+    const url = this.endpoint + (typeof to === 'string' ? to : '')
+    const response = await fetch(`${url}`, makeRequestInit('GET'))
+    return await response.blob()
+  }
+
+  protected async doPost<D, R> (to: string | null, data: D): Promise<IResponse<R>> {
     const url = this.endpoint + ((typeof to === 'string') ? to : '')
-    const resonse = await fetch(`${url}`, makeRequestInit('GET'))
-    return await resonse.json()
+
+    const response = await fetch(`${url}`, {
+      ...makeRequestInit('POST'),
+      body: JSON.stringify(data)
+    })
+    return await response.json()
   }
 
-  public async doGetBlob (to: string): Promise<Blob> {
+  protected async doPut<D, R> (to: string | null, data: D): Promise<IResponse<R>> {
     const url = this.endpoint + ((typeof to === 'string') ? to : '')
-    const resonse = await fetch(`${url}`, makeRequestInit('GET'))
-    return await resonse.blob()
+
+    const response = await fetch(`${url}`, {
+      ...makeRequestInit('POST'),
+      body: JSON.stringify(data)
+    })
+    return await response.json()
   }
 
-  protected async doPost<D, R> (to: string, data: D): Promise<IResponse<R>> {
-    const url = this.endpoint + (typeof to === 'string') ? to : ''
-
-    const resonse = await fetch(`${url}`, { ...makeRequestInit('POST'), body: JSON.stringify(data) })
-    return await resonse.json()
-  }
-
-  protected async doPut<D, R> (to: string, data: D): Promise<IResponse<R>> {
-    const url = this.endpoint + (typeof to === 'string') ? to : ''
-
-    const resonse = await fetch(`${url}`, { ...makeRequestInit('POST'), body: JSON.stringify(data) })
-    return await resonse.json()
-  }
-
-  protected async doDelete<R> (to: string): Promise<IResponse<R>> {
-    const url = this.endpoint + (typeof to === 'string') ? to : ''
-    const resonse = await fetch(`${url}`, makeRequestInit('DELETE'))
-    return await resonse.json()
+  protected async doDelete<R> (to: string | null): Promise<IResponse<R>> {
+    const url = this.endpoint + ((typeof to === 'string') ? to : '')
+    const response = await fetch(`${url}`, makeRequestInit('DELETE'))
+    return await response.json()
   }
 
   protected paginate<R> (): PaginatorClient<R> {
@@ -45,36 +56,36 @@ export class BaseEntity {
 }
 
 export class PaginatorClient<R> {
-  private endpoint = ''
-  private paginators: Paginator | null = null
+  private readonly endpoint: string = ''
+  private paginator: Paginator | null = null
 
   // eslint-disable-next-line space-before-function-paren
-  constructor(endpoint: string, paginators: Paginator | null) {
+  constructor (endpoint: string, paginator: Paginator | null) {
     this.endpoint = endpoint
-    this.paginators = paginators
+    this.paginator = paginator
   }
 
   public async next (): Promise<IResponsePaginated<R>> {
-    const response = await this.doGet(this.paginators?.next || '')
-    this.paginators = response.paginators
+    const response = await this.doGet(this.paginator?.next)
+    this.paginator = response.paginator
     return response
   }
 
   public async previous (): Promise<IResponsePaginated<R>> {
-    const response = await this.doGet(this.paginators?.previous || '')
-    this.paginators = response.paginators
+    const response = await this.doGet(this.paginator?.previous)
+    this.paginator = response.paginator
     return response
   }
 
   public async current (): Promise<IResponsePaginated<R>> {
-    const response = await this.doGet(this.paginators?.current || '')
-    this.paginators = response.paginators
+    const response = await this.doGet(this.paginator?.current)
+    this.paginator = response.paginator
     return response
   }
 
   protected async doGet (page = ''): Promise<IResponsePaginated<R>> {
-    const url = this.endpoint + ((page) ? `?_page=${page}` : '')
-    const resonse = await fetch(`${url}`, makeRequestInit('GET'))
-    return await resonse.json()
+    const url = this.endpoint + ((page.length > 0 ? `?_page=${page}` : ''))
+    const response = await fetch(`${url}`, makeRequestInit('GET'))
+    return await response.json()
   }
 }
