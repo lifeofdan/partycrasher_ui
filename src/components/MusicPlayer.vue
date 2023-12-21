@@ -81,9 +81,9 @@ async function previous () {
   trackAudio.play()
 }
 
-function initTrackSrc () {
+function initTrackSrc (index: number) {
   if (!musicPlayerStore.state.playlistTracks) return
-  trackAudio.src = buildTrackUrl(musicPlayerStore.state.playlistTracks[0].id)
+  trackAudio.src = buildTrackUrl(musicPlayerStore.state.playlistTracks[index].id)
 }
 
 function buildTrackUrl (trackId: string): string {
@@ -144,7 +144,7 @@ watch(
   () => musicPlayerStore.state.playlistTracks,
   (tracks) => {
     if (tracks?.length) {
-      initTrackSrc()
+      initTrackSrc(0)
     }
   }
 )
@@ -154,7 +154,19 @@ watch(
   () => {
     pause()
     musicPlayerStore.setCurrentIndex(0)
-    initTrackSrc()
+    initTrackSrc(0)
+    play()
+  }
+)
+
+watch(
+  () => musicPlayerStore.state.init,
+  () => {
+    if (!musicPlayerStore.state.showPlayer) {
+      musicPlayerStore.setShowPlayer(true)
+    }
+    pause()
+    initTrackSrc(musicPlayerStore.state.currentIndex)
     play()
   }
 )

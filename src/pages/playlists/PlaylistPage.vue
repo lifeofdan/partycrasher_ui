@@ -26,6 +26,7 @@
           <q-item
             v-ripple
             clickable
+            @click="setIndexAndPlay(index)"
           >
             <q-item-section avatar>
               <q-spinner-audio
@@ -63,6 +64,11 @@ function showAndPlay () {
   }
   musicPlayerStore.setShowPlayer(true)
   musicPlayerStore.setPlaying(true)
+}
+
+function setIndexAndPlay (index: number) {
+  musicPlayerStore.setCurrentIndex(index)
+  musicPlayerStore.initTrackSrc()
 }
 
 onMounted(async () => {

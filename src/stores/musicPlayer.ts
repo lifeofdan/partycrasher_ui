@@ -8,6 +8,7 @@ export const useMusicPlayerStore = defineStore('musicPlayer', () => {
   const playlistTracks = ref<IGetPlaylistTracks[] | null>(null)
   const currentIndex = ref(0)
   const reset = ref(false)
+  const init = ref(false)
 
   const actions = {
     fetchPlaylistTracks: async (playlistId: string): Promise<IGetPlaylistTracks[] | null> => {
@@ -32,6 +33,10 @@ export const useMusicPlayerStore = defineStore('musicPlayer', () => {
 
     reset () {
       reset.value = !reset.value
+    },
+
+    initTrackSrc () {
+      init.value = !init.value
     }
   }
 
@@ -41,7 +46,8 @@ export const useMusicPlayerStore = defineStore('musicPlayer', () => {
       playlistTracks,
       showPlayer,
       currentIndex,
-      reset
+      reset,
+      init
     }),
     ...actions
   }
