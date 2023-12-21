@@ -28,7 +28,7 @@ interface ITrackMetadata {
   pictures: Map<string, string>
 }
 
-export interface IGetPlaylistTracks {
+export interface IGetPlaylistTrack {
   id: string
   title: string
   media_id: string
@@ -38,7 +38,7 @@ export interface IGetPlaylistTracks {
 export interface IGetTrackData {
   id: string
   title: string
-  path: string
+  media_id: string
   metadata: ITrackMetadata
 }
 
@@ -100,7 +100,7 @@ export const api = {
     return await response.json()
   },
 
-  getPlaylistTracks: async (playlistId: string): Promise<IResponse<IGetPlaylistTracks[]>> => {
+  getPlaylistTracks: async (playlistId: string): Promise<IResponse<IGetPlaylistTrack[]>> => {
     const response = await fetch(`/api/v1/tracks/playlist/${playlistId}`, {
       headers: setTokenHeader()
     })
