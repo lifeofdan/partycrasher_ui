@@ -40,8 +40,8 @@
         />
         <q-route-tab
           v-if="me?.role === 'admin' || me?.role === 'user'"
-          :to="{name:'app.queue'}"
-          label="Queue"
+          :to="{name:'app.tracks'}"
+          label="Tracks"
           icon="queue_music"
         />
         <q-route-tab
@@ -70,9 +70,9 @@
       />
       <EssentialLink
         v-if="me?.role === 'admin' || me?.role === 'user'"
-        title="Queue"
+        title="Tracks"
         caption="Add tracks to play"
-        :to="{name: 'app.queue'}"
+        :to="{name: 'app.tracks'}"
       />
     </q-drawer>
 

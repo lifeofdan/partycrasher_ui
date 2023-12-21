@@ -7,6 +7,7 @@
             color="primary"
             icon="queue_music"
             label="Add to playlist"
+            @click="tracksStore.addTrackToDefaultPlaylist($route.params.id as string)"
           />
         </div>
       </q-img>
@@ -24,6 +25,12 @@
           @click="playOrPause"
         >
           <q-item-section avatar>
+            <q-avatar
+              square
+              class="q-mr-sm"
+            >
+              <q-img :src="img" />
+            </q-avatar>
             <template v-if="!previewPlaying">
               <q-btn
                 round
@@ -44,7 +51,7 @@
             /> -->
           </q-item-section>
           <q-item-section>
-            {{ queueStore.state.selectedTrack?.title ?? "&nbsp;" }}
+            {{ tracksStore.state.selectedTrack?.title ?? "&nbsp;" }}
           </q-item-section>
         </q-item>
       </q-list>
@@ -53,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { useQueueStore } from 'src/stores/queue'
+import { useTracksStore } from 'src/stores/tracks'
 import { useMusicPlayerStore } from 'src/stores/musicPlayer'
 import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -61,9 +68,10 @@ import { LocalStorage } from 'quasar'
 
 const route = useRoute()
 const musicPlayerStore = useMusicPlayerStore()
-const queueStore = useQueueStore()
+const tracksStore = useTracksStore()
 const userTrackAudio = new Audio()
 const previewPlaying = ref(false)
+const img = ref('')
 
 function playOrPause () {
   if (previewPlaying.value) {
@@ -104,9 +112,15 @@ watch(
 )
 onMounted(async () => {
   if (!route.params.id) return
-  await queueStore.fetchTrack(route.params.id as string)
-  if (!queueStore.state.selectedTrack) return
-  userTrackAudio.src = buildTrackUrl(queueStore.state.selectedTrack.id)
+  await tracksStore.fetchTrack(route.params.id as string)
+  if (!tracksStore.state.selectedTrack) return
+  userTrackAudio.src = buildTrackUrl(tracksStore.state.selectedTrack.id)
+
+  const mediaId = tracksStore.state.selectedTrack.metadata.pictures.cover_art_front ?? ''
+  if (!mediaId) return
+
+  img.value = await tracksStore.fetchTrackMedia(mediaId)
+  console.log(img.value)
 })
 </script>
 

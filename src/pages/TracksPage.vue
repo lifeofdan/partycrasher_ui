@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <template v-if="$route.name === 'app.queue'">
+    <template v-if="$route.name === 'app.tracks'">
       <div class="row items-center justify-evenly q-my-md">
         <div class="col q-mx-md">
           <q-input
@@ -12,7 +12,7 @@
       </div>
       <div class="row items-center content-between">
         <template
-          v-for="track in queueStore.state.tracks"
+          v-for="track in tracksStore.state.tracks"
           :key="track.id"
         >
           <MusicCard
@@ -28,7 +28,7 @@
           <q-btn
             color="primary"
             class="full-width"
-            label="Show queue"
+            label="Show tracks"
             @click="show(false)"
           />
         </div>
@@ -42,13 +42,13 @@
 import { ref, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import MusicCard from 'src/components/MusicCard.vue'
-import { useQueueStore } from 'src/stores/queue'
+import { useTracksStore } from 'src/stores/tracks'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const searchText = ref('')
 const $q = useQuasar()
-const queueStore = useQueueStore()
+const tracksStore = useTracksStore()
 
 function show (grid: boolean) {
   $q.bottomSheet({
@@ -88,16 +88,16 @@ function show (grid: boolean) {
 watch(
   () => route.name,
   async (name) => {
-    if (name && name === 'app.queue') {
-      await queueStore.fetchTracks()
+    if (name && name === 'app.tracks') {
+      await tracksStore.fetchTracks()
     }
   }
 )
 
 onMounted(async () => {
   // We do this because we don't want to fetch all tracks when we are loading the track sub-page
-  if (route.name === 'app.queue') {
-    await queueStore.fetchTracks()
+  if (route.name === 'app.tracks') {
+    await tracksStore.fetchTracks()
   }
 })
 </script>

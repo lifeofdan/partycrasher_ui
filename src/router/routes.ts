@@ -15,13 +15,13 @@ const routes: RouteRecordRaw[] = [
     children: [
       { name: 'app.profile', path: 'profile', meta: { title: 'Profile' }, component: async () => await import('pages/profile/ProfilePage.vue') },
       {
-        name: 'app.queue',
-        path: 'queue',
-        meta: { title: 'Queue' },
-        component: async () => await import('pages/QueuePage.vue'),
+        name: 'app.tracks',
+        path: 'tracks',
+        meta: { title: 'Tracks' },
+        component: async () => await import('pages/TracksPage.vue'),
         children: [
           {
-            component: async () => await import('pages/queue/TrackPage.vue'),
+            component: async () => await import('pages/tracks/TrackPage.vue'),
             name: 'app.track',
             path: ':id',
             meta: { title: 'Track', child: true }

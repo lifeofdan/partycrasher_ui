@@ -62,7 +62,7 @@ async function sendTokenValidateAndRouterPush () {
 
   const goto = {
     admin: 'app.playlists',
-    user: 'app.queue'
+    user: 'app.tracks'
   }
 
   router.push({ name: goto[response.role || 'user'] })
