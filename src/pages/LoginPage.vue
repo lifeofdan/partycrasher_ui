@@ -8,8 +8,18 @@
           label="Token"
           hint="Add your user token"
           :error="isInvalidToken"
-          error-message="Invalid token"
+          :error-message="errorMessage"
           @update:model-value="onTokenUpdate"
+          @keyup.enter="onSubmit"
+        />
+      </div>
+      <div class="col q-ma-md">
+        <q-input
+          v-model="loginToken"
+          outlined
+          label="Login Token"
+          mask="A-A#-##A"
+          :error-message="errorMessage"
           @keyup.enter="onSubmit"
         />
       </div>
@@ -34,29 +44,31 @@ import { useAuthStore } from 'src/stores/auth'
 const router = useRouter()
 const token = ref('')
 const isInvalidToken = ref(false)
+const loginToken = ref('')
+const errorMessage = ref('')
 
 async function onSubmit () {
   await sendTokenValidateAndRouterPush()
 }
 
 async function sendTokenValidateAndRouterPush () {
-  LocalStorage.remove('pc_token')
-  LocalStorage.set('pc_token', token.value)
+  // const response = await useAuthStore().fetchMe()
+  const response = await useAuthStore().authenticate(loginToken.value, token.value)
 
-  const response = await useAuthStore().fetchMe()
-
-  if (!response) {
+  if (typeof response === 'string') {
     isInvalidToken.value = true
-    LocalStorage.remove('pc_token')
+    errorMessage.value = response
     return
   }
 
-  if (response?.role === 'admin') {
-    router.push({ name: 'app.playlists' })
-    return
+  const goto = {
+    admin: 'app.playlists',
+    user: 'app.queue'
   }
 
-  router.push({ name: 'app.queue' })
+  console.log(response.role, goto[response.role || 'user'])
+
+  router.push({ name: goto[response.role || 'user'] })
 }
 
 function onTokenUpdate () {

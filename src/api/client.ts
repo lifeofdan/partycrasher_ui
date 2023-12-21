@@ -1,12 +1,18 @@
-export interface IResponse<T> {
-  data?: T
+/* global RequestInit */
+
+export type APIError = {
   success: boolean
-  message: string | null
+  message: string
+}
+
+export interface IResponse<T> extends APIError {
+  data: T | null
 }
 
 export interface IGetMeData {
   id: string
-  name: string
+  name: string,
+  api_token: string,
   role: 'user' | 'admin'
 }
 
@@ -52,43 +58,27 @@ export interface IResponsePaginated<T> {
 }
 
 export const api = {
-  getMe: async (): Promise<IResponse<IGetMeData>> => {
-    const response = await fetch('/api/v1/clients/me', {
-      headers: setTokenHeader()
-    })
-
-    return await response.json()
+  async loginTokenAuth (loginToken: string): Promise<IResponse<IGetMeData>> {
+    return await doGet(`/open/api/v1/clients/auth/${loginToken}`)
   },
-
+  async getMe (): Promise<IResponse<IGetMeData>> {
+    return await doGet('/api/v1/clients/me')
+  },
   getPlaylistsDefault: async (): Promise<IResponse<IGetPlaylistsData>> => {
-    const response = await fetch('/api/v1/playlists/default', {
-      headers: setTokenHeader()
-    })
-
-    return await response.json()
+    return await doGet('/api/v1/playlists/default')
   },
 
   getPlaylists: async (): Promise<IResponsePaginated<IGetPlaylistsData>> => {
-    const response = await fetch('/api/v1/playlists', {
-      headers: setTokenHeader()
-    })
-
+    const response = await fetch('/api/v1/playlists', makeRequestInit('GET'))
     return await response.json()
   },
 
   getPlaylist: async (playlistId: string): Promise<IResponse<IGetPlaylistsData>> => {
-    const response = await fetch(`/api/v1/playlists/${playlistId}`, {
-      headers: setTokenHeader()
-    })
-
-    return await response.json()
+    return await doGet(`/api/v1/playlists/${playlistId}`)
   },
 
   getTracks: async (): Promise<IResponsePaginated<IGetTrackData>> => {
-    const response = await fetch('/api/v1/tracks', {
-      headers: setTokenHeader()
-    })
-
+    const response = await fetch('/api/v1/tracks', makeRequestInit('GET'))
     return await response.json()
   },
 
@@ -101,21 +91,30 @@ export const api = {
   },
 
   getPlaylistTracks: async (playlistId: string): Promise<IResponse<IGetPlaylistTrack[]>> => {
-    const response = await fetch(`/api/v1/tracks/playlist/${playlistId}`, {
-      headers: setTokenHeader()
-    })
-
-    return await response.json()
+    return await doGet(`/api/v1/tracks/playlist/${playlistId}`)
   }
 }
 
-function setTokenHeader (): Headers {
-  const token = window.localStorage.getItem('pc_token')?.split('|')[1]
-  const header = new Headers({
-    'Cache-Control': 'no-cache',
-    Authorization: `Bearer ${token ?? ''}`,
-    'Content-Type': 'application/json'
-  })
+function makeRequestInit (method: 'GET' | 'POST' | 'PUT' | 'DELETE'): RequestInit {
+  const token = window.localStorage.getItem('pc_token')
+  return {
+    method,
+    credentials: 'include',
+    headers: {
 
-  return header
+      'Cache-Control': 'no-cache',
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  }
+}
+
+async function doGet<T> (segmentUrl: string): Promise<IResponse<T>> {
+  try {
+    const response = await fetch(segmentUrl, makeRequestInit('GET'))
+
+    return await response.json()
+  } catch (e) {
+    return { data: null, success: false, message: (e as Error).message }
+  }
 }

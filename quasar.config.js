@@ -99,20 +99,20 @@ module.exports = configure(
         // https: true
         open: true, // opens browser window automatically
         proxy: {
+          '/open/api': {
+            target: process.env.API_URL,
+            changeOrigin: true,
+            // rewrite: path => path.replace(/^\/api/, '')
+            configure: (/* proxy, options */) => {
+              // proxy will be an instance of 'http-proxy'
+            }
+          },
           '/api': {
             target: process.env.API_URL,
             changeOrigin: true,
             // rewrite: path => path.replace(/^\/api/, '')
             configure: (/* proxy, options */) => {
               // proxy will be an instance of 'http-proxy'
-            },
-            '/open/api': {
-              target: process.env.API_URL,
-              changeOrigin: true,
-              // rewrite: path => path.replace(/^\/api/, '')
-              configure: (/* proxy, options */) => {
-                // proxy will be an instance of 'http-proxy'
-              }
             }
           }
         }
