@@ -36,7 +36,6 @@
 </template>
 
 <script setup lang="ts">
-import { LocalStorage } from 'quasar'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from 'src/stores/auth'
