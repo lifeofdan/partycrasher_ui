@@ -55,6 +55,7 @@ module.exports = configure(
           node: 'node16'
         },
 
+        publicPath: '/_ui',
         vueRouterMode: 'hash', // available values: 'hash', 'history'
         // vueRouterBase,
         // vueDevtools,
@@ -95,17 +96,25 @@ module.exports = configure(
       // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
       devServer: {
         // https: true
-        open: true // opens browser window automatically
-        // proxy: {
-        //   '/api': {
-        //     target: 'http://localhost:8080',
-        //     changeOrigin: true,
-        //     // rewrite: path => path.replace(/^\/api/, '')
-        //     configure: (/* proxy, options */) => {
-        //       // proxy will be an instance of 'http-proxy'
-        //     }
-        //   }
-        // }
+        open: true, // opens browser window automatically
+        proxy: {
+          '/api': {
+            target: process.env.API_URL,
+            changeOrigin: true,
+            // rewrite: path => path.replace(/^\/api/, '')
+            configure: (/* proxy, options */) => {
+              // proxy will be an instance of 'http-proxy'
+            },
+            '/open/api': {
+              target: process.env.API_URL,
+              changeOrigin: true,
+              // rewrite: path => path.replace(/^\/api/, '')
+              configure: (/* proxy, options */) => {
+                // proxy will be an instance of 'http-proxy'
+              }
+            }
+          }
+        }
       },
 
       // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#framework
