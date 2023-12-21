@@ -90,11 +90,9 @@ import { IGetMeData } from 'src/api/client'
 import { useRoute } from 'vue-router'
 import { useMusicPlayerStore } from 'src/stores/musicPlayer'
 import MusicPlayer from 'src/components/MusicPlayer.vue'
-import { storeToRefs } from 'pinia'
 
 const route = useRoute()
 const musicPlayerStore = useMusicPlayerStore()
-const { state } = storeToRefs(musicPlayerStore)
 const leftDrawerOpen = ref(false)
 const authStore = useAuthStore()
 const me = ref<IGetMeData | null>(null)
