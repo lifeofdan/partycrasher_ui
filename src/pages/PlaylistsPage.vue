@@ -26,15 +26,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import MusicCard from 'src/components/MusicCard.vue'
 import { usePlaylistsStore } from 'src/stores/playlists'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const playlistsStore = usePlaylistsStore()
 const searchText = ref('')
 
+watch(
+  () => route.name,
+  async (name) => {
+    if (name && name === 'app.playlists') {
+      await playlistsStore.fetchPlaylistsDefault()
+    }
+  }
+)
 onMounted(async () => {
-  await playlistsStore.fetchPlaylistsDefault()
+  // We do this because we don't want to fetch all playlists when we are loading the playlist sub-page
+  if (route.name === 'app.playlists') {
+    await playlistsStore.fetchPlaylistsDefault()
+  }
 })
 </script>
 
