@@ -24,27 +24,35 @@
           clickable
           @click="playOrPause"
         >
-          <q-item-section avatar>
-            <q-avatar
-              square
-              class="q-mr-sm"
-            >
-              <q-img :src="img" />
-            </q-avatar>
-            <template v-if="!previewPlaying">
-              <q-btn
-                round
-                flat
-                icon="play_arrow"
-              />
-            </template>
-            <template v-else>
-              <q-btn
-                round
-                flat
-                icon="pause"
-              />
-            </template>
+          <q-item-section
+            avatar
+          >
+            <div class="row">
+              <div class="col">
+                <q-avatar
+                  square
+                  class="q-mr-sm"
+                >
+                  <q-img :src="img" />
+                </q-avatar>
+              </div>
+              <div class="col flex vertical-middle">
+                <template v-if="!previewPlaying">
+                  <q-btn
+                    round
+                    flat
+                    icon="play_arrow"
+                  />
+                </template>
+                <template v-else>
+                  <q-btn
+                    round
+                    flat
+                    icon="pause"
+                  />
+                </template>
+              </div>
+            </div>
             <!-- <q-spinner-audio
               color="primary"
               size="2em"
