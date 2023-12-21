@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
-import { IResponsePaginated, IGetPlaylistsData, api, IGetPlaylistTracks } from 'src/api/client'
+import { IResponsePaginated, IGetPlaylistsData, api, IGetPlaylistTrack } from 'src/api/client'
 import { reactive, ref } from 'vue'
 
 export const usePlaylistsStore = defineStore('playlists', () => {
   const defaultPlaylist = ref<IGetPlaylistsData | null>(null)
-  const playlistTracks = ref<IGetPlaylistTracks[] | null>(null)
+  const playlistTracks = ref<IGetPlaylistTrack[] | null>(null)
 
   const actions = {
     fetchPlaylistsDefault: async (): Promise<IGetPlaylistsData | null> => {
@@ -26,7 +26,7 @@ export const usePlaylistsStore = defineStore('playlists', () => {
       return response.data ?? null
     },
 
-    fetchPlaylistTracks: async (playlistId: string): Promise<IGetPlaylistTracks[] | null> => {
+    fetchPlaylistTracks: async (playlistId: string): Promise<IGetPlaylistTrack[] | null> => {
       const response = await api.getPlaylistTracks(playlistId)
 
       playlistTracks.value = response.data ?? null
