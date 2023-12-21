@@ -18,7 +18,6 @@ export interface TrackEntity {
   }
 }
 class TrackEntityApiClient extends BaseEntity {
-  // eslint-disable-next-line space-before-function-paren
   constructor (version = 'v1') {
     super(`/api/${version}/tracks`)
   }
