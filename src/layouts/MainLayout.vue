@@ -98,9 +98,10 @@ const authStore = useAuthStore()
 const me = ref<IGetMeData | null>(null)
 const pageTitle = ref(route.meta.title as string)
 
-function toggleLeftDrawer () {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
+// Commented out to prevent warning. We will need this later for the desktop / large screen view
+// function toggleLeftDrawer () {
+//   leftDrawerOpen.value = !leftDrawerOpen.value
+// }
 
 watch(
   () => authStore.state.me,
