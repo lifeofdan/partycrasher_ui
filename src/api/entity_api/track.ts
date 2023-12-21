@@ -1,17 +1,17 @@
 import { BaseEntity, PaginatorClient } from '.'
 import { IResponse } from '../client'
 
-export type TrackEntity = {
-  id: string,
-  title: string,
-  metdata: {
-    title: string,
-    artist: string,
-    album: string,
-    genre: string,
-    track: number,
-    disk: number,
-    year: number,
+export interface TrackEntity {
+  id: string
+  title: string
+  metadata: {
+    title: string
+    artist: string
+    album: string
+    genre: string
+    track: number
+    disk: number
+    year: number
     pictures: {
       cover_art_front?: string
     }
@@ -19,7 +19,7 @@ export type TrackEntity = {
 }
 class TrackEntityApiClient extends BaseEntity {
   // eslint-disable-next-line space-before-function-paren
-  constructor(version = 'v1') {
+  constructor (version = 'v1') {
     super(`/api/${version}/tracks`)
   }
 

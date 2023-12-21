@@ -48,7 +48,7 @@ export interface IGetTrackData {
   metadata: ITrackMetadata
 }
 
-export type Paginator = {
+export interface Paginator {
   current: string
   next: string
   previous: string
@@ -56,7 +56,7 @@ export type Paginator = {
 
 export interface IResponsePaginated<T> {
   page: T[]
-  paginators: Paginator
+  paginator: Paginator
 }
 
 export const api = {

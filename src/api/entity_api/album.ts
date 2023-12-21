@@ -2,10 +2,10 @@ import { BaseEntity, PaginatorClient } from '.'
 import { IResponse } from '../client'
 import { TrackEntity, makeTrackClient } from './track'
 
-export type AlbumEntity = {
-  id: string,
-  title: string,
-  year: number,
+export interface AlbumEntity {
+  id: string
+  title: string
+  year: number
   metadata: {
     pictures?: {
       cover_art_front?: string
@@ -15,7 +15,7 @@ export type AlbumEntity = {
 
 class AlbumEntityClient extends BaseEntity {
   // eslint-disable-next-line space-before-function-paren
-  constructor(version = 'v1') {
+  constructor (version = 'v1') {
     super(`/api/${version}/albums`)
   }
 
@@ -27,7 +27,7 @@ class AlbumEntityClient extends BaseEntity {
     return this.paginate()
   }
 
-  public async tracks (id: string): Promise<IResponse<Array<TrackEntity>>> {
+  public async tracks (id: string): Promise<IResponse<TrackEntity[]>> {
     return await makeTrackClient().byAlbum(id)
   }
 }
