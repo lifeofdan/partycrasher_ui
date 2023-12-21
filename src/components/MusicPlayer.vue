@@ -153,6 +153,7 @@ watch(
   () => musicPlayerStore.state.reset,
   () => {
     pause()
+    musicPlayerStore.setCurrentIndex(0)
     initTrackSrc()
     play()
   }
