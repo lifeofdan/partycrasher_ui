@@ -48,13 +48,15 @@ export interface IGetTrackData {
   metadata: ITrackMetadata
 }
 
+export type Paginator = {
+  current: string
+  next: string
+  previous: string
+}
+
 export interface IResponsePaginated<T> {
   page: T[]
-  paginators: {
-    current: string
-    next: string
-    previous: string
-  }
+  paginators: Paginator
 }
 
 export const api = {
@@ -87,7 +89,7 @@ export const api = {
   }
 }
 
-function makeRequestInit (method: 'GET' | 'POST' | 'PUT' | 'DELETE'): RequestInit {
+export function makeRequestInit (method: 'GET' | 'POST' | 'PUT' | 'DELETE'): RequestInit {
   const token = window.localStorage.getItem('pc_token')
   return {
     method,
