@@ -31,7 +31,9 @@ interface ITrackMetadata {
   track: number
   disk: number
   year: number
-  pictures: Map<string, string>
+  pictures: {
+    cover_art_front?: string
+  }
 }
 
 export interface IGetPlaylistTrack {
