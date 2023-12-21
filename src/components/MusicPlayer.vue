@@ -15,7 +15,7 @@
         round
         flat
         color="primary"
-        :disable="!canPrevious"
+        :disable="!musicPlayerStore.state.canPrevious"
         icon="fast_rewind"
         @click="previous"
       />
@@ -40,7 +40,7 @@
       <q-btn
         round
         flat
-        :disable="!canNext"
+        :disable="!musicPlayerStore.state.canNext"
         color="primary"
         icon="fast_forward"
         @click="next"
@@ -56,8 +56,6 @@ import { watch, ref } from 'vue'
 
 const musicPlayerStore = useMusicPlayerStore()
 const trackAudio = new Audio()
-const canNext = ref(true)
-const canPrevious = ref(false)
 
 function play () {
   trackAudio.play()
@@ -110,24 +108,6 @@ trackAudio.addEventListener('ended', async () => {
   next()
   return false
 })
-
-watch(
-  () => musicPlayerStore.state.currentIndex,
-  (index) => {
-    if (!musicPlayerStore.state.playlistTracks) return
-    if (index === (musicPlayerStore.state.playlistTracks.length - 1)) {
-      canNext.value = false
-    } else {
-      canNext.value = true
-    }
-
-    if (index === 0) {
-      canPrevious.value = false
-    } else {
-      canPrevious.value = true
-    }
-  }
-)
 
 watch(
   () => musicPlayerStore.state.playing,

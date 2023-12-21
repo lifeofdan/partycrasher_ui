@@ -1,22 +1,32 @@
 import { defineStore } from 'pinia'
-import { IGetPlaylistTracks, api } from 'src/api/client'
-import { reactive, ref } from 'vue'
+import { IGetPlaylistTrack, api } from 'src/api/client'
+import { reactive, ref, watch } from 'vue'
 
 export const useMusicPlayerStore = defineStore('musicPlayer', () => {
   const playing = ref(false)
   const showPlayer = ref(false)
-  const playlistTracks = ref<IGetPlaylistTracks[] | null>(null)
+  const playlistTracks = ref<IGetPlaylistTrack[] | null>(null)
   const currentIndex = ref(0)
   const reset = ref(false)
   const init = ref(false)
+  const canNext = ref(false)
+  const canPrevious = ref(false)
 
   const actions = {
-    fetchPlaylistTracks: async (playlistId: string): Promise<IGetPlaylistTracks[] | null> => {
+    fetchPlaylistTracks: async (playlistId: string): Promise<IGetPlaylistTrack[] | null> => {
       const response = await api.getPlaylistTracks(playlistId)
 
       playlistTracks.value = response.data ?? null
 
       return playlistTracks.value
+    },
+
+    setPlaylist (tracks: IGetPlaylistTrack[]) {
+      playlistTracks.value = tracks
+    },
+
+    clearPlaylist () {
+      playlistTracks.value = null
     },
 
     setPlaying (isPlaying: boolean) {
@@ -40,6 +50,33 @@ export const useMusicPlayerStore = defineStore('musicPlayer', () => {
     }
   }
 
+  watch(
+    () => playlistTracks.value,
+    (tracks) => {
+      if (tracks !== null && tracks.length > 1) {
+        canNext.value = true
+      }
+    }
+  )
+
+  watch(
+    () => currentIndex.value,
+    (index) => {
+      if (playlistTracks.value === null) return
+      if (index === (playlistTracks.value.length - 1)) {
+        canNext.value = false
+      } else {
+        canNext.value = true
+      }
+
+      if (index === 0) {
+        canPrevious.value = false
+      } else {
+        canPrevious.value = true
+      }
+    }
+  )
+
   return {
     state: reactive({
       playing,
@@ -47,7 +84,9 @@ export const useMusicPlayerStore = defineStore('musicPlayer', () => {
       showPlayer,
       currentIndex,
       reset,
-      init
+      init,
+      canNext,
+      canPrevious
     }),
     ...actions
   }
