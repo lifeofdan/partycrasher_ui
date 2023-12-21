@@ -100,14 +100,14 @@ module.exports = configure(
         open: true, // opens browser window automatically
         proxy: {
           '/api': {
-            target: dotenv,
+            target: process.env.API_URL,
             changeOrigin: true,
             // rewrite: path => path.replace(/^\/api/, '')
             configure: (/* proxy, options */) => {
               // proxy will be an instance of 'http-proxy'
             },
             '/open/api': {
-              target: dotenv,
+              target: process.env.API_URL,
               changeOrigin: true,
               // rewrite: path => path.replace(/^\/api/, '')
               configure: (/* proxy, options */) => {
