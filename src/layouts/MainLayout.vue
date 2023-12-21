@@ -3,7 +3,7 @@
     view="lHh lpr lFf"
     container
     class="shadow-2 rounded-borders"
-    style="height: 100vh"
+    style="min-height: -webkit-fill-available; min-height: 100vh;"
   >
     <q-header
       class="bg-white text-primary"
@@ -45,9 +45,9 @@
           icon="queue_music"
         />
         <q-route-tab
-          :to="{name: 'login'}"
-          label="Logout"
-          icon="logout"
+          :to="{name: 'app.profile'}"
+          label="Profile"
+          icon="account_circle"
         />
       </q-tabs>
     </q-footer>
@@ -108,6 +108,13 @@ watch(
     me.value = newMe
   },
   { deep: true }
+)
+
+watch(
+  () => route.name,
+  () => {
+    pageTitle.value = route.meta.title as string
+  }
 )
 
 onMounted(() => {
