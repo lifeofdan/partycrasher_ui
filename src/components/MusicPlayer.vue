@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { LocalStorage } from 'quasar'
 import { useMusicPlayerStore } from 'src/stores/musicPlayer'
-import { watch, ref } from 'vue'
+import { watch } from 'vue'
 
 const musicPlayerStore = useMusicPlayerStore()
 const trackAudio = new Audio()
