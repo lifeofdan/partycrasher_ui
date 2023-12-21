@@ -66,8 +66,6 @@ async function sendTokenValidateAndRouterPush () {
     user: 'app.queue'
   }
 
-  console.log(response.role, goto[response.role || 'user'])
-
   router.push({ name: goto[response.role || 'user'] })
 }
 
