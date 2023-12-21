@@ -59,7 +59,6 @@ export interface IResponsePaginated<T> {
 
 export const api = {
   async loginTokenAuth (loginToken: string): Promise<IResponse<IGetMeData>> {
-    console.log('making request with: ', loginToken, `/open/api/v1/clients/auth/${loginToken}`)
     return await doGet(`/open/api/v1/clients/auth/${loginToken}`)
   },
   async getMe (): Promise<IResponse<IGetMeData>> {
@@ -90,7 +89,6 @@ export const api = {
 
 function makeRequestInit (method: 'GET' | 'POST' | 'PUT' | 'DELETE'): RequestInit {
   const token = window.localStorage.getItem('pc_token')
-  console.log('token...', token)
   return {
     method,
     credentials: 'include',
