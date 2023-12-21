@@ -1,16 +1,31 @@
 <template>
   <div
-    class="row justify-center bg-white text-dark"
+    class="row bg-white text-dark"
     style="border-top: 1px solid rgba(0, 0, 0, 0.12); border-bottom: 1px solid rgba(0, 0, 0, 0.12);"
   >
     <div class="col-6 q-my-sm">
       <template v-if="musicPlayerStore.state.playlistTracks">
         <div class="q-ml-sm">
+          <template v-if="coverImageUrl">
+            <q-avatar
+              square
+              class="q-mr-sm"
+            >
+              <img :src="coverImageUrl">
+            </q-avatar>
+          </template>
+          <template v-else>
+            <q-avatar
+              square
+              class="q-mr-sm"
+              icon="music_note"
+            />
+          </template>
           {{ musicPlayerStore.state.playlistTracks[musicPlayerStore.state.currentIndex].title }}
         </div>
       </template>
     </div>
-    <div class="col-6 text-right">
+    <div class="col-6 justify-end flex vertical-middle">
       <q-btn
         round
         flat
@@ -52,13 +67,26 @@
 <script setup lang="ts">
 import { LocalStorage } from 'quasar'
 import { useMusicPlayerStore } from 'src/stores/musicPlayer'
-import { watch } from 'vue'
+import { useTracksStore } from 'src/stores/tracks'
+import { watch, ref } from 'vue'
 
 const musicPlayerStore = useMusicPlayerStore()
+const tracksStore = useTracksStore()
 const trackAudio = new Audio()
+const coverImageUrl = ref('')
 
-function play () {
+async function getTrackPicture (index: number): Promise<string> {
+  if (
+    !musicPlayerStore.state.playlistTracks ||
+    !musicPlayerStore.state.playlistTracks[index] ||
+    !musicPlayerStore.state.playlistTracks[index].metadata.pictures.cover_art_front
+  ) { return '' }
+  return await tracksStore.fetchTrackMedia(musicPlayerStore.state.playlistTracks[index].metadata.pictures.cover_art_front ?? '')
+}
+
+async function play () {
   trackAudio.play()
+  coverImageUrl.value = await getTrackPicture(musicPlayerStore.state.currentIndex)
   musicPlayerStore.setPlaying(true)
 }
 
@@ -71,12 +99,14 @@ async function next () {
   musicPlayerStore.setPlaying(true)
   trackAudio.src = await fetchNextSongUrl()
   trackAudio.play()
+  coverImageUrl.value = await getTrackPicture(musicPlayerStore.state.currentIndex)
 }
 
 async function previous () {
   musicPlayerStore.setPlaying(true)
   trackAudio.src = await fetchPreviousSongUrl()
   trackAudio.play()
+  coverImageUrl.value = await getTrackPicture(musicPlayerStore.state.currentIndex)
 }
 
 function initTrackSrc (index: number) {
