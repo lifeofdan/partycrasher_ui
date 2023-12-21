@@ -23,6 +23,10 @@ class PlaylistEntityClient extends BaseEntity {
     return await this.doGet(`/${id}`)
   }
 
+  public async byDefault (): Promise<IResponse<PlaylistEntity>> {
+    return await this.doGet('/default')
+  }
+
   public all (): PaginatorClient<PlaylistEntity> {
     return this.paginate()
   }
