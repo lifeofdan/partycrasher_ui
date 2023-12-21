@@ -55,7 +55,7 @@
 <script setup lang="ts">
 import { useQueueStore } from 'src/stores/queue'
 import { useMusicPlayerStore } from 'src/stores/musicPlayer'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { LocalStorage } from 'quasar'
 
@@ -94,6 +94,14 @@ function buildTrackUrl (trackId: string): string {
   return `${API_URL}/api/v1/stream/${trackId}?_token=${token}`
 }
 
+watch(
+  () => musicPlayerStore.state.playing,
+  (status) => {
+    if (status) {
+      pausePreview()
+    }
+  }
+)
 onMounted(async () => {
   if (!route.params.id) return
   await queueStore.fetchTrack(route.params.id as string)
