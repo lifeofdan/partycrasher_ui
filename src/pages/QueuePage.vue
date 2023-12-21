@@ -1,46 +1,51 @@
 <template>
   <q-page>
-    <div class="row items-center justify-evenly q-my-md">
-      <div class="col q-mx-md">
-        <q-input
-          v-model="searchText"
-          outlined
-          label="search"
-        />
+    <template v-if="$route.name === 'app.queue'">
+      <div class="row items-center justify-evenly q-my-md">
+        <div class="col q-mx-md">
+          <q-input
+            v-model="searchText"
+            outlined
+            label="search"
+          />
+        </div>
       </div>
-    </div>
-    <div class="row items-center content-between">
-      <template
-        v-for="track in queueStore.state.tracks"
-        :key="track.id"
-      >
-        <MusicCard
-          style="min-width: 160px; max-width: 320px;"
-          type="track"
-          :title="track.title"
-          :description="track.metadata.artist"
-        />
-      </template>
-    </div>
-    <div class="row q-my-md absolute-bottom">
-      <div class="col text-center q-mx-md q-mb-md">
-        <q-btn
-          color="primary"
-          class="full-width"
-          label="Show queue"
-          @click="show(false)"
-        />
+      <div class="row items-center content-between">
+        <template
+          v-for="track in queueStore.state.tracks"
+          :key="track.id"
+        >
+          <MusicCard
+            style="min-width: 160px; max-width: 320px;"
+            :title="track.title"
+            :sub-title="track.metadata.artist"
+            :track="track"
+          />
+        </template>
       </div>
-    </div>
+      <div class="row q-my-md absolute-bottom">
+        <div class="col text-center q-mx-md q-mb-md">
+          <q-btn
+            color="primary"
+            class="full-width"
+            label="Show queue"
+            @click="show(false)"
+          />
+        </div>
+      </div>
+    </template>
+    <RouterView />
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import MusicCard from 'src/components/MusicCard.vue'
 import { useQueueStore } from 'src/stores/queue'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const searchText = ref('')
 const $q = useQuasar()
 const queueStore = useQueueStore()
@@ -80,7 +85,19 @@ function show (grid: boolean) {
   })
 }
 
+watch(
+  () => route.name,
+  async (name) => {
+    if (name && name === 'app.queue') {
+      await queueStore.fetchTracks()
+    }
+  }
+)
+
 onMounted(async () => {
-  await queueStore.fetchTracks()
+  // We do this because we don't want to fetch all tracks when we are loading the track sub-page
+  if (route.name === 'app.queue') {
+    await queueStore.fetchTracks()
+  }
 })
 </script>
