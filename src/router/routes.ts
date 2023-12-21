@@ -14,6 +14,7 @@ const routes: RouteRecordRaw[] = [
     component: async () => await import('layouts/MainLayout.vue'),
     children: [
       { name: 'app.queue', path: 'queue', meta: { title: 'Queue' }, component: async () => await import('pages/QueuePage.vue') },
+      { name: 'app.profile', path: 'profile', meta: { title: 'Profile' }, component: async () => await import('pages/profile/ProfilePage.vue') },
       {
         component: async () => await import('pages/PlaylistsPage.vue'),
         name: 'app.playlists',
