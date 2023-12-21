@@ -1,6 +1,6 @@
 /* global RequestInit */
 
-export type APIError = {
+export interface APIError {
   success: boolean
   message: string
 }
@@ -11,8 +11,8 @@ export interface IResponse<T> extends APIError {
 
 export interface IGetMeData {
   id: string
-  name: string,
-  api_token: string,
+  name: string
+  api_token: string
   role: 'user' | 'admin'
 }
 
@@ -85,9 +85,7 @@ export const api = {
   },
 
   getTrack: async (id: string): Promise<IResponse<IGetTrackData>> => {
-    const response = await fetch(`/api/v1/tracks/${id}`, {
-      headers: setTokenHeader()
-    })
+    const response = await fetch(`/api/v1/tracks/${id}`, makeRequestInit('GET'))
 
     return await response.json()
   },
@@ -105,7 +103,7 @@ export function makeRequestInit (method: 'GET' | 'POST' | 'PUT' | 'DELETE'): Req
     headers: {
 
       'Cache-Control': 'no-cache',
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token ?? ''}`,
       'Content-Type': 'application/json'
     }
   }
