@@ -32,6 +32,6 @@ class AlbumEntityClient extends BaseEntity {
   }
 }
 
-export function makeAblumClient (): AlbumEntityClient {
+export function makeAlbumClient (): AlbumEntityClient {
   return new AlbumEntityClient()
 }
