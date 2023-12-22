@@ -23,22 +23,24 @@
           v-for="(track, index) in tracksWithImages"
           :key="track.id"
         >
-          <q-item
-            v-ripple
-            clickable
-          >
+          <q-item>
             <q-item-section avatar>
               <div class="row">
                 <div
-                  class="col"
+                  class="col flex flex-center"
                   style="min-width: 40px"
                 >
-                  <q-img :src="track.src">
-                    <q-spinner-audio
-                      v-show="index === musicPlayerStore.state.currentIndex && musicPlayerStore.state.playing"
-                      color="primary"
-                      size="2em"
-                    />
+                  <q-img
+                    :src="track.src"
+                    style="clip-path: circle()"
+                  >
+                    <div class="absolute-center flex flex-center items-end bg-transparent">
+                      <q-spinner-audio
+                        v-show="index === musicPlayerStore.state.currentIndex && musicPlayerStore.state.playing"
+                        color="grey-6"
+                        size="1.5em"
+                      />
+                    </div>
                   </q-img>
                 </div>
                 <div class="col">
