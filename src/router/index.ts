@@ -7,6 +7,7 @@ import {
 } from 'vue-router'
 
 import routes from './routes'
+import { useAuthStore } from 'src/stores/auth'
 
 /*
  * If not building with SSR mode, you can
@@ -35,7 +36,13 @@ export default route(function (/* { store, ssrContext } */) {
   })
 
   Router.beforeEach(async (to, _from, next) => {
-    if (localStorage.getItem('pc_token') != null) {
+    if (localStorage.getItem('pc_token') !== null) {
+      const authStore = useAuthStore()
+
+      if (authStore.state.me === null) {
+        await authStore.fetchMe()
+      }
+
       return (to.name === 'login') ? next('/') : next()
     }
     return (to.name === 'login') ? next() : next('/login')
