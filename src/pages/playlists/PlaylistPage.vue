@@ -48,8 +48,8 @@
                     <q-btn
                       round
                       flat
-                      icon="replay"
-                      @click="setIndexAndPlay(index)"
+                      icon="pause"
+                      @click="musicPlayerStore.setPlaying(false)"
                     />
                   </template>
                   <template v-else>
@@ -63,8 +63,19 @@
                 </div>
               </div>
             </q-item-section>
-            <q-item-section>
+            <q-item-section @click="playOrPause(index)">
               {{ track.title }}
+            </q-item-section>
+            <q-item-section side>
+              <template v-if="index === musicPlayerStore.state.currentIndex && musicPlayerStore.state.playing">
+                <q-btn
+                  round
+                  flat
+                  color="dark"
+                  icon="replay"
+                  @click="setIndexAndPlay(index)"
+                />
+              </template>
             </q-item-section>
           </q-item>
         </template>
@@ -89,6 +100,14 @@ const musicPlayerStore = useMusicPlayerStore()
 const playlistsStore = usePlaylistsStore()
 const currentPlaylist = ref<IGetPlaylistsData | null>(null)
 const tracksWithImages = ref<ITrackWithImgSrc[]>([])
+
+async function playOrPause (index: number) {
+  if (musicPlayerStore.state.playing && index === musicPlayerStore.state.currentIndex) {
+    musicPlayerStore.setPlaying(false)
+  } else {
+    setIndexAndPlay(index)
+  }
+}
 
 function showAndPlay () {
   if (musicPlayerStore.state.playing) {
