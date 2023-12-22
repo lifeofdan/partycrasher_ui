@@ -21,7 +21,7 @@
               icon="music_note"
             />
           </template>
-          {{ musicPlayerStore.state.playlistTracks[musicPlayerStore.state.currentIndex].title }}
+          {{ musicPlayerStore.state.playlistTracks[musicPlayerStore.state.currentIndex]?.title }}
         </div>
       </template>
     </div>
@@ -67,14 +67,11 @@
 <script setup lang="ts">
 import { LocalStorage } from 'quasar'
 import { useMusicPlayerStore } from 'src/stores/musicPlayer'
-import { useTracksStore } from 'src/stores/tracks'
 import { watch, ref } from 'vue'
 
 const musicPlayerStore = useMusicPlayerStore()
 const trackAudio = new Audio()
 const coverImageUrl = ref('')
-
-trackAudio.volume = 0.1
 
 async function play () {
   trackAudio.play()

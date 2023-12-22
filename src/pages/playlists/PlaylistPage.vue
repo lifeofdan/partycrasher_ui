@@ -2,13 +2,15 @@
   <div class="row">
     <div class="col">
       <q-img src="https://cdn.quasar.dev/img/parallax2.jpg">
-        <div class="absolute-bottom text-subtitle1 text-center">
-          <q-btn
-            color="primary"
-            round
-            icon="play_arrow"
-            @click="showAndPlay"
-          />
+        <div class="absolute-bottom text-subtitle1 text-center bg-transparent">
+          <template v-if="musicPlayerStore.state.playlistTracks && musicPlayerStore.state.playlistTracks.length">
+            <q-btn
+              color="primary"
+              round
+              icon="play_arrow"
+              @click="showAndPlay"
+            />
+          </template>
         </div>
       </q-img>
     </div>
