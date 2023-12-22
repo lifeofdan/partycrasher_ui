@@ -5,7 +5,7 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: async () => await import('layouts/LoginLayout.vue'),
     children: [
-      { path: '', redirect: '/login' },
+      { path: '', redirect: '/app/tracks' },
       { name: 'login', path: 'login', meta: { title: 'Login' }, component: async () => await import('pages/LoginPage.vue') }
     ]
   },
