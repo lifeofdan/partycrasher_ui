@@ -71,22 +71,14 @@ import { useTracksStore } from 'src/stores/tracks'
 import { watch, ref } from 'vue'
 
 const musicPlayerStore = useMusicPlayerStore()
-const tracksStore = useTracksStore()
 const trackAudio = new Audio()
 const coverImageUrl = ref('')
 
-async function getTrackPicture (index: number): Promise<string> {
-  if (
-    !musicPlayerStore.state.playlistTracks ||
-    !musicPlayerStore.state.playlistTracks[index] ||
-    !musicPlayerStore.state.playlistTracks[index].metadata.pictures.cover_art_front
-  ) { return '' }
-  return await tracksStore.fetchTrackMedia(musicPlayerStore.state.playlistTracks[index].metadata.pictures.cover_art_front ?? '')
-}
+trackAudio.volume = 0.1
 
 async function play () {
   trackAudio.play()
-  coverImageUrl.value = await getTrackPicture(musicPlayerStore.state.currentIndex)
+  coverImageUrl.value = await musicPlayerStore.getTrackPicture(musicPlayerStore.state.currentIndex)
   musicPlayerStore.setPlaying(true)
 }
 
@@ -99,14 +91,14 @@ async function next () {
   musicPlayerStore.setPlaying(true)
   trackAudio.src = await fetchNextSongUrl()
   trackAudio.play()
-  coverImageUrl.value = await getTrackPicture(musicPlayerStore.state.currentIndex)
+  coverImageUrl.value = await musicPlayerStore.getTrackPicture(musicPlayerStore.state.currentIndex)
 }
 
 async function previous () {
   musicPlayerStore.setPlaying(true)
   trackAudio.src = await fetchPreviousSongUrl()
   trackAudio.play()
-  coverImageUrl.value = await getTrackPicture(musicPlayerStore.state.currentIndex)
+  coverImageUrl.value = await musicPlayerStore.getTrackPicture(musicPlayerStore.state.currentIndex)
 }
 
 function initTrackSrc (index: number) {
@@ -153,7 +145,7 @@ watch(
 watch(
   () => musicPlayerStore.state.playlistTracks,
   (tracks) => {
-    if (tracks?.length) {
+    if (tracks?.length && !musicPlayerStore.state.playing) {
       initTrackSrc(0)
     }
   }

@@ -20,20 +20,46 @@
         separator
       >
         <template
-          v-for="(track, index) in musicPlayerStore.state.playlistTracks"
+          v-for="(track, index) in tracksWithImages"
           :key="track.id"
         >
           <q-item
             v-ripple
             clickable
-            @click="setIndexAndPlay(index)"
           >
             <q-item-section avatar>
-              <q-spinner-audio
-                v-if="index === musicPlayerStore.state.currentIndex && musicPlayerStore.state.playing"
-                color="primary"
-                size="2em"
-              />
+              <div class="row">
+                <div
+                  class="col"
+                  style="min-width: 40px"
+                >
+                  <q-img :src="track.src">
+                    <q-spinner-audio
+                      v-show="index === musicPlayerStore.state.currentIndex && musicPlayerStore.state.playing"
+                      color="primary"
+                      size="2em"
+                    />
+                  </q-img>
+                </div>
+                <div class="col">
+                  <template v-if="index === musicPlayerStore.state.currentIndex && musicPlayerStore.state.playing">
+                    <q-btn
+                      round
+                      flat
+                      icon="replay"
+                      @click="setIndexAndPlay(index)"
+                    />
+                  </template>
+                  <template v-else>
+                    <q-btn
+                      round
+                      flat
+                      icon="play_arrow"
+                      @click="setIndexAndPlay(index)"
+                    />
+                  </template>
+                </div>
+              </div>
             </q-item-section>
             <q-item-section>
               {{ track.title }}
@@ -46,16 +72,21 @@
 </template>
 
 <script setup lang="ts">
-import { IGetPlaylistsData } from 'src/api/client'
+import { IGetPlaylistTrack, IGetPlaylistsData } from 'src/api/client'
 import { useMusicPlayerStore } from 'src/stores/musicPlayer'
 import { usePlaylistsStore } from 'src/stores/playlists'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
+interface ITrackWithImgSrc extends IGetPlaylistTrack {
+  src?: string
+}
+
 const route = useRoute()
 const musicPlayerStore = useMusicPlayerStore()
 const playlistsStore = usePlaylistsStore()
 const currentPlaylist = ref<IGetPlaylistsData | null>(null)
+const tracksWithImages = ref<ITrackWithImgSrc[]>([])
 
 function showAndPlay () {
   if (musicPlayerStore.state.playing) {
@@ -67,15 +98,26 @@ function showAndPlay () {
 }
 
 function setIndexAndPlay (index: number) {
+  if (musicPlayerStore.state.playing) {
+    musicPlayerStore.setPlaying(false)
+  }
   musicPlayerStore.setCurrentIndex(index)
   musicPlayerStore.initTrackSrc()
 }
 
 onMounted(async () => {
+  if (playlistsStore.state.playlistTracks?.length) return
   currentPlaylist.value = await playlistsStore.fetchPlaylist(route.params.id as string)
 
   if (!currentPlaylist.value) return
-  musicPlayerStore.fetchPlaylistTracks(currentPlaylist.value.id)
+  await musicPlayerStore.fetchPlaylistTracks(currentPlaylist.value.id)
+
+  if (!musicPlayerStore.state.playlistTracks) return
+  tracksWithImages.value = []
+
+  for (const [index, track] of musicPlayerStore.state.playlistTracks.entries()) {
+    tracksWithImages.value.push({ ...track, src: await musicPlayerStore.getTrackPicture(index) })
+  }
 })
 </script>
 

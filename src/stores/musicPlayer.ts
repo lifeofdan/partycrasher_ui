@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia'
 import { IGetPlaylistTrack, api } from 'src/api/client'
 import { reactive, ref, watch } from 'vue'
+import { useTracksStore } from './tracks'
 
 export const useMusicPlayerStore = defineStore('musicPlayer', () => {
+  const trackStore = useTracksStore()
   const playing = ref(false)
   const showPlayer = ref(false)
   const playlistTracks = ref<IGetPlaylistTrack[] | null>(null)
@@ -47,6 +49,16 @@ export const useMusicPlayerStore = defineStore('musicPlayer', () => {
 
     initTrackSrc () {
       init.value = !init.value
+    },
+
+    async getTrackPicture (index: number): Promise<string> {
+      if (
+        playlistTracks.value === null ||
+        playlistTracks.value[index] === undefined ||
+        playlistTracks.value[index].metadata.pictures.cover_art_front === undefined
+      ) { return '' }
+
+      return await trackStore.fetchTrackMedia(playlistTracks.value[index].metadata.pictures.cover_art_front ?? '')
     }
   }
 

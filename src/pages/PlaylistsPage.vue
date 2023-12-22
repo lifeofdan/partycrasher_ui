@@ -38,14 +38,14 @@ const searchText = ref('')
 watch(
   () => route.name,
   async (name) => {
-    if (name && name === 'app.playlists') {
+    if (name && name === 'app.playlists' && !playlistsStore.state.defaultPlaylist) {
       await playlistsStore.fetchPlaylistsDefault()
     }
   }
 )
 onMounted(async () => {
   // We do this because we don't want to fetch all playlists when we are loading the playlist sub-page
-  if (route.name === 'app.playlists') {
+  if (route.name === 'app.playlists' && !playlistsStore.state.defaultPlaylist) {
     await playlistsStore.fetchPlaylistsDefault()
   }
 })
