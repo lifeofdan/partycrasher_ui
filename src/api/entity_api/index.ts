@@ -5,6 +5,8 @@ import {
   makeRequestInit
 } from '../client'
 
+export type ApiResponse<R> = Promise<IResponse<R>>
+
 export class BaseEntity {
   private readonly endpoint: string = ''
   // eslint-disable-next-line space-before-function-paren
