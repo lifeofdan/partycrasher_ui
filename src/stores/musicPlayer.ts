@@ -23,7 +23,7 @@ export const useMusicPlayerStore = defineStore('musicPlayer', () => {
       return playlistTracks.value
     },
 
-    setPlaylist (tracks: IGetPlaylistTrack[]) {
+    setPlaylistTracks (tracks: IGetPlaylistTrack[]) {
       playlistTracks.value = tracks
     },
 
@@ -52,13 +52,16 @@ export const useMusicPlayerStore = defineStore('musicPlayer', () => {
     },
 
     async getTrackPicture (index: number): Promise<string> {
-      if (
-        playlistTracks.value === null ||
-        playlistTracks.value[index] === undefined ||
-        playlistTracks.value[index].metadata.pictures.cover_art_front === undefined
-      ) { return '' }
+      if (playlistTracks.value === null) return ''
+      const tracks = playlistTracks.value[index]
 
-      return await trackStore.fetchTrackMedia(playlistTracks.value[index].metadata.pictures.cover_art_front ?? '')
+      if (tracks === undefined) return ''
+      const pictures = tracks.metadata.pictures
+      if (pictures === undefined) return ''
+      const art = tracks.metadata.pictures.cover_art_front
+
+      if (art === undefined) return ''
+      return await trackStore.fetchTrackMedia(art ?? '')
     }
   }
 

@@ -1,5 +1,5 @@
 import { BaseEntity, PaginatorClient } from '.'
-import { IResponse } from '../client'
+import { IResponse, ITrackMetadata } from '../client'
 
 export interface PlaylistEntity {
   id: string
@@ -11,7 +11,10 @@ export interface PlaylistEntity {
 export interface PlaylistTrackEntity {
   track_id: string
   playlist_id: string
-  metadata: string
+  title: string
+  id: string
+  media_id: string
+  metadata: ITrackMetadata
 }
 
 class PlaylistEntityClient extends BaseEntity {
@@ -33,6 +36,10 @@ class PlaylistEntityClient extends BaseEntity {
 
   public async addTracks (entries: Array<{ track_id: string, playlist_id: string }>): Promise<IResponse<PlaylistTrackEntity[]>> {
     return await this.doPost('/add-tracks', entries)
+  }
+
+  public async removeTracks (entries: Array<{ track_id: string, playlist_id: string }>): Promise<IResponse<PlaylistTrackEntity[]>> {
+    return await this.doPost('/remove-tracks', entries)
   }
 }
 

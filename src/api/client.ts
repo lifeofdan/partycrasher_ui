@@ -23,7 +23,7 @@ export interface IGetPlaylistsData {
   description: string
 }
 
-interface ITrackMetadata {
+export interface ITrackMetadata {
   title: string
   artist: string
   album: string

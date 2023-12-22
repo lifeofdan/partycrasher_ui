@@ -69,21 +69,57 @@
               {{ track.title }}
             </q-item-section>
             <q-item-section side>
-              <template v-if="index === musicPlayerStore.state.currentIndex && musicPlayerStore.state.playing">
+              <div class="row">
+                <template v-if="index === musicPlayerStore.state.currentIndex && musicPlayerStore.state.playing">
+                  <q-btn
+                    round
+                    flat
+                    color="dark"
+                    icon="replay"
+                    @click="setIndexAndPlay(index)"
+                  />
+                </template>
                 <q-btn
                   round
                   flat
                   color="dark"
-                  icon="replay"
-                  @click="setIndexAndPlay(index)"
+                  icon="playlist_remove"
+                  @click="onRemove(index)"
                 />
-              </template>
+              </div>
             </q-item-section>
           </q-item>
         </template>
       </q-list>
     </div>
   </div>
+  <q-dialog
+    v-model="removeDialogue"
+    persistent
+  >
+    <q-card>
+      <q-card-section class="row items-center">
+        <span class="q-ml-sm">Are you sure you want to remove this from the playlist?</span>
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn
+          v-close-popup
+          flat
+          no-caps
+          label="Cancel"
+          color="primary"
+        />
+        <q-btn
+          flat
+          no-caps
+          label="Yes, remove."
+          color="primary"
+          @click="remove()"
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
@@ -101,7 +137,9 @@ const route = useRoute()
 const musicPlayerStore = useMusicPlayerStore()
 const playlistsStore = usePlaylistsStore()
 const currentPlaylist = ref<IGetPlaylistsData | null>(null)
+const trackToRemove = ref<IGetPlaylistTrack | null>(null)
 const tracksWithImages = ref<ITrackWithImgSrc[]>([])
+const removeDialogue = ref(false)
 
 async function playOrPause (index: number) {
   if (musicPlayerStore.state.playing && index === musicPlayerStore.state.currentIndex) {
@@ -113,6 +151,7 @@ async function playOrPause (index: number) {
 
 function showAndPlay () {
   if (musicPlayerStore.state.playing) {
+    musicPlayerStore.setPlaying(false)
     musicPlayerStore.reset()
     return
   }
@@ -128,12 +167,27 @@ function setIndexAndPlay (index: number) {
   musicPlayerStore.initTrackSrc()
 }
 
-onMounted(async () => {
-  if (playlistsStore.state.playlistTracks?.length) return
+function onRemove (index: number) {
+  if (playlistsStore.state.playlistTracks === null) return
+  trackToRemove.value = playlistsStore.state.playlistTracks[index]
+  removeDialogue.value = true
+}
+
+async function remove () {
+  if (trackToRemove.value === null) return
+  await playlistsStore.removeFromPlaylist(trackToRemove.value.id, route.params.id as string)
+
+  await getTracksAndSetImages()
+  removeDialogue.value = false
+}
+
+async function getTracksAndSetImages () {
   currentPlaylist.value = await playlistsStore.fetchPlaylist(route.params.id as string)
 
   if (!currentPlaylist.value) return
-  await musicPlayerStore.fetchPlaylistTracks(currentPlaylist.value.id)
+  const tracks = await playlistsStore.fetchPlaylistTracks(currentPlaylist.value.id) ?? []
+
+  musicPlayerStore.setPlaylistTracks(tracks)
 
   if (!musicPlayerStore.state.playlistTracks) return
   tracksWithImages.value = []
@@ -141,6 +195,9 @@ onMounted(async () => {
   for (const [index, track] of musicPlayerStore.state.playlistTracks.entries()) {
     tracksWithImages.value.push({ ...track, src: await musicPlayerStore.getTrackPicture(index) })
   }
+}
+onMounted(async () => {
+  await getTracksAndSetImages()
 })
 </script>
 
