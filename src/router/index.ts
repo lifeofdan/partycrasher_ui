@@ -19,7 +19,7 @@ import { useAuthStore } from 'src/stores/auth'
  */
 
 export default route(function (/* { store, ssrContext } */) {
-  const createHistory = process.env.SERVER
+  const createHistory = process.env.SERVER !== null
     ? createMemoryHistory
     : process.env.VUE_ROUTER_MODE === 'history'
       ? createWebHistory
