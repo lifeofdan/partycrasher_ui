@@ -19,7 +19,7 @@ import { useAuthStore } from 'src/stores/auth'
  */
 
 export default route(function (/* { store, ssrContext } */) {
-  const createHistory = process.env.SERVER !== null
+  const createHistory = process.env.SERVER === null
     ? createMemoryHistory
     : process.env.VUE_ROUTER_MODE === 'history'
       ? createWebHistory
@@ -40,7 +40,13 @@ export default route(function (/* { store, ssrContext } */) {
       const authStore = useAuthStore()
 
       if (authStore.state.me === null) {
-        await authStore.fetchMe()
+        const response = await authStore.fetchMe()
+        if (typeof response === 'string') {
+          // this means we have something in localstorage that is not valid we
+          // need to clear localstorage and allow the user to log back in
+
+          localStorage.clear()
+        }
       }
 
       return (to.name === 'login') ? next('/') : next()
