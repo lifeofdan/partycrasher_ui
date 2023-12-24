@@ -7,7 +7,6 @@ import {
 } from 'vue-router'
 
 import routes from './routes'
-import { useAuthStore } from 'src/stores/auth'
 
 /*
  * If not building with SSR mode, you can
@@ -33,25 +32,6 @@ export default route(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE)
-  })
-
-  Router.beforeEach(async (to, _from, next) => {
-    if (localStorage.getItem('pc_token') !== null) {
-      const authStore = useAuthStore()
-
-      if (authStore.state.me === null) {
-        const response = await authStore.fetchMe()
-        if (typeof response === 'string') {
-          // this means we have something in localstorage that is not valid we
-          // need to clear localstorage and allow the user to log back in
-
-          localStorage.clear()
-        }
-      }
-
-      return (to.name === 'login') ? next('/') : next()
-    }
-    return (to.name === 'login') ? next() : next('/login')
   })
 
   return Router
