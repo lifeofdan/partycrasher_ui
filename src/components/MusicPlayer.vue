@@ -68,10 +68,51 @@
 import { LocalStorage } from 'quasar'
 import { useMusicPlayerStore } from 'src/stores/musicPlayer'
 import { watch, ref } from 'vue'
+import { PlaylistEvent, TopicPayload, makeLiveUpdateClient } from 'src/api/entity_api/live_update'
+import { usePlaylistsStore } from 'src/stores/playlists'
 
 const musicPlayerStore = useMusicPlayerStore()
+const playlistsStore = usePlaylistsStore()
 const trackAudio = new Audio()
 const coverImageUrl = ref('')
+const liveUpdateClient = makeLiveUpdateClient()
+
+liveUpdateClient.subscribe('playlist_event', async (response) => {
+  if (isPlaylistEvent(response)) {
+    if (response.event.track_removed) {
+      const tracks = await playlistsStore.fetchPlaylistTracks(response.event.track_removed.playlist_id)
+
+      if (tracks === null) return
+      musicPlayerStore.setPlaylistTracks(tracks)
+    }
+    if (response.event.track_added) {
+      const tracks = await playlistsStore.fetchPlaylistTracks(response.event.track_added.playlist_id)
+
+      if (tracks === null) return
+      musicPlayerStore.setPlaylistTracks(tracks)
+    }
+  }
+})
+
+function isTrackRemoved (obj: TopicPayload): obj is PlaylistEvent {
+  return (obj as PlaylistEvent).event.track_removed !== undefined
+}
+
+function isTrackAdded (obj: TopicPayload): obj is PlaylistEvent {
+  return (obj as PlaylistEvent).event.track_added !== undefined
+}
+
+function isDefaultPlaylist (obj: TopicPayload): obj is PlaylistEvent {
+  return (obj as PlaylistEvent).event.default_playlist !== undefined
+}
+
+function isPlaylistEvent (obj: TopicPayload): obj is PlaylistEvent {
+  if (isTrackRemoved(obj)) return true
+  if (isTrackAdded(obj)) return true
+  if (isDefaultPlaylist(obj)) return true
+
+  return false
+}
 
 async function play () {
   trackAudio.play()

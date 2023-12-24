@@ -65,12 +65,20 @@ export const useMusicPlayerStore = defineStore('musicPlayer', () => {
     }
   }
 
-  watch(
-    () => playlistTracks.value,
-    (tracks) => {
-      if (tracks !== null && tracks.length > 1) {
+  function doLengthChecks (): void {
+    if (playlistTracks.value !== null && playlistTracks.value.length > 0) {
+      if (playlistTracks.value.length > 1) {
         canNext.value = true
+      } else {
+        canNext.value = false
       }
+    }
+  }
+
+  watch(
+    () => playlistTracks.value?.length,
+    () => {
+      doLengthChecks()
     }
   )
 
