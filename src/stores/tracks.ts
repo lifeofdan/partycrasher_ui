@@ -37,6 +37,19 @@ export const useTracksStore = defineStore('tracks', () => {
       if (!response.success || response.data === null) return
 
       await playlistClient.addTracks([{ track_id: trackId, playlist_id: response.data.id }])
+    },
+
+    async addTracksToDefaultPlaylist (trackIds: string[]) {
+      const response = await playlistClient.byDefault()
+      if (!response.success || response.data === null) return
+      const defaultPlaylistId = response.data.id
+
+      const tracks: Array<{ track_id: string, playlist_id: string }> = []
+
+      trackIds.forEach((id) => {
+        tracks.push({ track_id: id, playlist_id: defaultPlaylistId })
+      })
+      await playlistClient.addTracks(tracks)
     }
   }
 

@@ -196,11 +196,12 @@ async function getTracksAndSetImages () {
   if (!currentPlaylist.value) return
   const tracks = await playlistsStore.fetchPlaylistTracks(currentPlaylist.value.id) ?? []
 
-  tracksWithImages.value = []
-
+  const tracksWithImgs = []
   for (const [index, track] of tracks.entries()) {
-    tracksWithImages.value.push({ ...track, src: await playlistsStore.getTrackPicture(index) })
+    tracksWithImgs.push({ ...track, src: await playlistsStore.getTrackPicture(index) })
   }
+
+  tracksWithImages.value = tracksWithImgs
 }
 
 const liveUpdateClient = makeLiveUpdateClient()
