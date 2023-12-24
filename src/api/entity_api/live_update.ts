@@ -12,7 +12,7 @@ export interface PlaylistEvent {
   event: {
     default_playlist?: PlaylistSetDefault
     track_added?: PlaylistTrackToggle
-    track_remove?: PlaylistTrackToggle
+    track_removed?: PlaylistTrackToggle
   }
 }
 
