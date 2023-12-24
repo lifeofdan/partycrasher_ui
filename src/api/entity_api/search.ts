@@ -1,12 +1,14 @@
 import { BaseEntity } from '.'
 import { IResponse } from '../client'
+import { TrackEntityMetadata } from './track'
 
 export interface SearchEntity {
   id: string
-  entity: string
+  entity: 'track' | 'album'
   entity_id: string
   metadata: {
-    entity_metadata: Record<string, unknown>
+    entity_metadata: TrackEntityMetadata
+    title?: ''
   }
 }
 

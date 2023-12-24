@@ -1,22 +1,25 @@
 import { BaseEntity, PaginatorClient } from '.'
 import { IResponse } from '../client'
 
+export interface TrackEntityMetadata {
+  title: string
+  artist: string
+  album: string
+  genre: string
+  track: number
+  disk: number
+  year: number
+  pictures: {
+    cover_art_front?: string
+  }
+}
+
 export interface TrackEntity {
   id: string
   title: string
-  metadata: {
-    title: string
-    artist: string
-    album: string
-    genre: string
-    track: number
-    disk: number
-    year: number
-    pictures: {
-      cover_art_front?: string
-    }
-  }
+  metadata: TrackEntityMetadata
 }
+
 class TrackEntityApiClient extends BaseEntity {
   constructor (version = 'v1') {
     super(`/api/${version}/tracks`)

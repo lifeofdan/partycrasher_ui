@@ -22,23 +22,26 @@
 
 <script setup lang="ts">
 import { IGetPlaylistsData, IGetTrackData } from 'src/api/client'
+import { SearchEntity } from 'src/api/entity_api/search'
 import { ref, toRefs, onMounted } from 'vue'
 
 const props = withDefaults(
   defineProps<{
     title: string,
-    subTitle: string,
+    subTitle?: string,
     playlist?: IGetPlaylistsData,
     track?: IGetTrackData
+    search?: SearchEntity
   }>(),
   {
     title: '',
     subTitle: '',
     playlist: undefined,
-    track: undefined
+    track: undefined,
+    search: undefined
   })
 
-const { playlist, track } = toRefs(props)
+const { playlist, track, search } = toRefs(props)
 const id = ref('')
 const routeName = ref('')
 
@@ -52,6 +55,13 @@ onMounted(() => {
   if (track.value) {
     id.value = track.value.id
     routeName.value = 'app.track'
+  }
+
+  if (search.value) {
+    if (search.value.entity === 'track') {
+      id.value = search.value.entity_id
+      routeName.value = 'app.track'
+    }
   }
 })
 </script>
