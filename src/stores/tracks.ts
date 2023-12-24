@@ -20,7 +20,7 @@ export const useTracksStore = defineStore('tracks', () => {
       return tracks.value
     },
 
-    async fetchTrack (id: string) {
+    async fetchTrack (id: string): Promise<TrackEntity | null> {
       const response = await trackClient.byId(id)
 
       selectedTrack.value = response.data

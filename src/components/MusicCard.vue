@@ -62,6 +62,10 @@ onMounted(() => {
       id.value = search.value.entity_id
       routeName.value = 'app.track'
     }
+    if (search.value.entity === 'album') {
+      id.value = search.value.entity_id
+      routeName.value = 'app.album'
+    }
   }
 })
 </script>

@@ -3,12 +3,22 @@
     <div class="col">
       <q-img src="https://cdn.quasar.dev/img/parallax2.jpg">
         <div class="absolute-bottom text-subtitle1 text-center">
-          <q-btn
-            color="primary"
-            icon="queue_music"
-            label="Add to playlist"
-            @click="tracksStore.addTrackToDefaultPlaylist($route.params.id as string)"
-          />
+          <template v-if="route.name === 'app.track'">
+            <q-btn
+              color="primary"
+              icon="queue_music"
+              label="Add to playlist"
+              @click="tracksStore.addTrackToDefaultPlaylist($route.params.id as string)"
+            />
+          </template>
+          <template v-if="route.name === 'app.album'">
+            <q-btn
+              color="primary"
+              icon="queue_music"
+              label="Add album to playlist"
+              @click="addAlbumToPlaylist"
+            />
+          </template>
         </div>
       </q-img>
     </div>
@@ -19,49 +29,54 @@
         bordered
         separator
       >
-        <q-item
-          v-ripple
-          clickable
-          @click="playOrPause"
+        <template
+          v-for="(track, index) in tracks"
+          :key="track.id"
         >
-          <q-item-section
-            avatar
+          <q-item
+            v-ripple
+            clickable
+            @click="playOrPause(index)"
           >
-            <div class="row">
-              <div class="col">
-                <q-avatar
-                  square
-                  class="q-mr-sm"
-                >
-                  <q-img :src="img" />
-                </q-avatar>
+            <q-item-section
+              avatar
+            >
+              <div class="row">
+                <div class="col">
+                  <q-avatar
+                    square
+                    class="q-mr-sm"
+                  >
+                    <q-img :src="img" />
+                  </q-avatar>
+                </div>
+                <div class="col flex vertical-middle">
+                  <template v-if="!previewPlaying">
+                    <q-btn
+                      round
+                      flat
+                      icon="play_arrow"
+                    />
+                  </template>
+                  <template v-else>
+                    <q-btn
+                      round
+                      flat
+                      icon="pause"
+                    />
+                  </template>
+                </div>
               </div>
-              <div class="col flex vertical-middle">
-                <template v-if="!previewPlaying">
-                  <q-btn
-                    round
-                    flat
-                    icon="play_arrow"
-                  />
-                </template>
-                <template v-else>
-                  <q-btn
-                    round
-                    flat
-                    icon="pause"
-                  />
-                </template>
-              </div>
-            </div>
             <!-- <q-spinner-audio
               color="primary"
               size="2em"
             /> -->
-          </q-item-section>
-          <q-item-section>
-            {{ tracksStore.state.selectedTrack?.title ?? "&nbsp;" }}
-          </q-item-section>
-        </q-item>
+            </q-item-section>
+            <q-item-section>
+              {{ track.title ?? "&nbsp;" }}
+            </q-item-section>
+          </q-item>
+        </template>
       </q-list>
     </div>
   </div>
@@ -69,22 +84,31 @@
 
 <script setup lang="ts">
 import { useTracksStore } from 'src/stores/tracks'
+import { useAlbumsStore } from 'src/stores/albums'
 import { useMusicPlayerStore } from 'src/stores/musicPlayer'
 import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { LocalStorage } from 'quasar'
+import { TrackEntity } from 'src/api/entity_api/track'
 
+interface TrackEntityWithSrc extends TrackEntity {
+  src: string
+  img: string
+}
 const route = useRoute()
 const musicPlayerStore = useMusicPlayerStore()
+const albumsStore = useAlbumsStore()
 const tracksStore = useTracksStore()
 const userTrackAudio = new Audio()
 const previewPlaying = ref(false)
 const img = ref('')
+const tracks = ref<TrackEntityWithSrc[]>([])
 
-function playOrPause () {
+function playOrPause (index: number) {
   if (previewPlaying.value) {
     pausePreview()
   } else {
+    userTrackAudio.src = tracks.value[index].src
     playPreview()
   }
 }
@@ -110,6 +134,12 @@ function buildTrackUrl (trackId: string): string {
   return `${API_URL}/api/v1/stream/${trackId}?_token=${token}`
 }
 
+function addAlbumToPlaylist () {
+  tracks.value.forEach((track) => {
+    tracksStore.addTrackToDefaultPlaylist(track.id)
+  })
+}
+
 watch(
   () => musicPlayerStore.state.playing,
   (status) => {
@@ -118,17 +148,28 @@ watch(
     }
   }
 )
+
 onMounted(async () => {
   if (!route.params.id) return
-  await tracksStore.fetchTrack(route.params.id as string)
-  if (!tracksStore.state.selectedTrack) return
-  userTrackAudio.src = buildTrackUrl(tracksStore.state.selectedTrack.id)
+  if (route.name === 'app.track') {
+    const track = await tracksStore.fetchTrack(route.params.id as string)
 
-  const mediaId = tracksStore.state.selectedTrack.metadata.pictures.cover_art_front ?? ''
-  if (!mediaId) return
+    if (track !== null) {
+      const src = buildTrackUrl(track.id)
+      const mediaId = track.metadata.pictures.cover_art_front ?? ''
+      const img = await tracksStore.fetchTrackMedia(mediaId)
+      tracks.value.push({ ...track, src, img })
+    }
+    return
+  }
 
-  img.value = await tracksStore.fetchTrackMedia(mediaId)
-  console.log(img.value)
+  if (route.name === 'app.album') {
+    const albumTracks = await albumsStore.fetchTracks(route.params.id as string)
+
+    for (const aTrack of albumTracks) {
+      tracks.value.push({ ...aTrack, src: buildTrackUrl(aTrack.id), img: await tracksStore.fetchTrackMedia(aTrack.id) })
+    }
+  }
 })
 </script>
 

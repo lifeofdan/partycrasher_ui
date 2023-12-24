@@ -13,12 +13,14 @@
       </div>
       <template v-if="searchResults.length">
         <div class="row items-center content-between">
-          <template v-if="tracks.length">
-            <div class="col">
+          <div class="col">
+            <template v-if="tracks.length">
               <div
                 class="row q-mx-sm"
               >
-                <h4>Tracks</h4>
+                <h4 class="q-mb-md">
+                  Tracks
+                </h4>
               </div>
               <div class="row">
                 <template
@@ -32,8 +34,26 @@
                   />
                 </template>
               </div>
-            </div>
-          </template>
+            </template>
+            <template v-if="albums.length">
+              <div class="row q-mx-sm">
+                <h4 class="q-mb-md">
+                  Albums
+                </h4>
+              </div>
+              <div class="row">
+                <template
+                  v-for="album in albums"
+                  :key="album.id"
+                >
+                  <MusicCard
+                    :search="album"
+                    :title="album.metadata.title"
+                  />
+                </template>
+              </div>
+            </template>
+          </div>
         </div>
       </template>
     </template>
@@ -44,22 +64,28 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { SearchEntity, makeSearchClient } from 'src/api/entity_api/search'
-import { TrackEntity } from 'src/api/entity_api/track'
 import MusicCard from 'src/components/MusicCard.vue'
 
 const searchText = ref('')
 const searchResults = ref<SearchEntity[]>([])
 const tracks = ref<SearchEntity[]>([])
+const albums = ref<SearchEntity[]>([])
 const searchClient = makeSearchClient()
 
 async function doSearch () {
   if (searchText.value.length > 1) {
     tracks.value = []
+    albums.value = []
+
     const results = await searchClient.search(searchText.value)
     if (results.success && results.data) {
       results.data.forEach((result) => {
         if (result.entity === 'track') {
           tracks.value.push(result)
+        }
+
+        if (result.entity === 'album') {
+          albums.value.push(result)
         }
       })
       searchResults.value = results.data
