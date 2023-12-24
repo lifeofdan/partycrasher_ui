@@ -89,12 +89,8 @@ import { useMusicPlayerStore } from 'src/stores/musicPlayer'
 import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { LocalStorage } from 'quasar'
-import { TrackEntity } from 'src/api/entity_api/track'
+import { TrackEntityPlusSrcImg } from 'src/api/entity_api/track'
 
-interface TrackEntityWithSrc extends TrackEntity {
-  src: string
-  img: string
-}
 const route = useRoute()
 const musicPlayerStore = useMusicPlayerStore()
 const albumsStore = useAlbumsStore()
@@ -102,7 +98,7 @@ const tracksStore = useTracksStore()
 const userTrackAudio = new Audio()
 const previewPlaying = ref(false)
 const bannerImgSrc = ref('')
-const tracks = ref<TrackEntityWithSrc[]>([])
+const tracks = ref<TrackEntityPlusSrcImg[]>([])
 
 function playOrPause (index: number) {
   if (previewPlaying.value) {
@@ -127,13 +123,6 @@ function pausePreview () {
   userTrackAudio.pause()
 }
 
-function buildTrackUrl (trackId: string): string {
-  const token: string = LocalStorage.getItem('pc_token') ?? ''
-  const API_URL = process.env.API_URL ?? ''
-
-  return `${API_URL}/api/v1/stream/${trackId}?_token=${token}`
-}
-
 function addAlbumToPlaylist () {
   tracks.value.forEach((track) => {
     tracksStore.addTrackToDefaultPlaylist(track.id)
@@ -155,7 +144,7 @@ onMounted(async () => {
     const track = await tracksStore.fetchTrack(route.params.id as string)
 
     if (track !== null) {
-      const src = buildTrackUrl(track.id)
+      const src = tracksStore.buildTrackUrl(track.id)
       const mediaId = track.metadata.pictures.cover_art_front ?? ''
       const img = await tracksStore.fetchTrackMedia(mediaId)
       bannerImgSrc.value = img
@@ -167,9 +156,10 @@ onMounted(async () => {
   if (route.name === 'app.album') {
     const album = await albumsStore.fetchAlbum(route.params.id as string)
     const albumTracks = await albumsStore.fetchTracks(route.params.id as string)
-    bannerImgSrc.value = await tracksStore.fetchTrackMedia(album?.metadata.pictures?.cover_art_front ?? '')
+    bannerImgSrc.value = album?.metadata.pictures?.cover_art_front ? await tracksStore.fetchTrackMedia(album?.metadata.pictures?.cover_art_front ?? '') : ''
     for (const aTrack of albumTracks) {
-      tracks.value.push({ ...aTrack, src: buildTrackUrl(aTrack.id), img: await tracksStore.fetchTrackMedia(aTrack.id) })
+      const img = aTrack.metadata.pictures.cover_art_front ? await tracksStore.fetchTrackMedia(aTrack.metadata.pictures.cover_art_front) : ''
+      tracks.value.push({ ...aTrack, src: tracksStore.buildTrackUrl(aTrack.id), img })
     }
   }
 })

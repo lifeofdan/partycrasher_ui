@@ -4,6 +4,7 @@ import { reactive, ref } from 'vue'
 import { TrackEntity, makeTrackClient } from 'src/api/entity_api/track'
 import { makeMediaClient } from 'src/api/entity_api/media'
 import { makePlaylistClient } from 'src/api/entity_api/playlist'
+import { LocalStorage } from 'quasar'
 
 export const useTracksStore = defineStore('tracks', () => {
   const tracks = ref<IGetTrackData[]>([])
@@ -18,6 +19,12 @@ export const useTracksStore = defineStore('tracks', () => {
 
       tracks.value = response.page
       return tracks.value
+    },
+    buildTrackUrl (trackId: string): string {
+      const token: string = LocalStorage.getItem('pc_token') ?? ''
+      const API_URL = process.env.API_URL ?? ''
+
+      return `${API_URL}/api/v1/stream/${trackId}?_token=${token}`
     },
 
     async fetchTrack (id: string): Promise<TrackEntity | null> {

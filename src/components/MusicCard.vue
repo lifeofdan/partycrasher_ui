@@ -6,7 +6,7 @@
     style="text-decoration: none;"
   >
     <q-card class="my-card q-mx-md q-my-md">
-      <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" />
+      <q-img :src="imgSrc" />
 
       <q-card-section>
         <div class="text-h6">
@@ -21,21 +21,24 @@
 </template>
 
 <script setup lang="ts">
-import { IGetPlaylistsData, IGetTrackData } from 'src/api/client'
+import { IGetPlaylistsData } from 'src/api/client'
 import { SearchEntity } from 'src/api/entity_api/search'
+import { TrackEntity } from 'src/api/entity_api/track'
 import { ref, toRefs, onMounted } from 'vue'
 
 const props = withDefaults(
   defineProps<{
     title: string,
     subTitle?: string,
+    imgSrc?: string,
     playlist?: IGetPlaylistsData,
-    track?: IGetTrackData
+    track?: TrackEntity
     search?: SearchEntity
   }>(),
   {
     title: '',
     subTitle: '',
+    imgSrc: '',
     playlist: undefined,
     track: undefined,
     search: undefined

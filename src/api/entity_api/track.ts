@@ -20,6 +20,11 @@ export interface TrackEntity {
   metadata: TrackEntityMetadata
 }
 
+export interface TrackEntityPlusSrcImg extends TrackEntity {
+  src: string
+  img: string
+}
+
 class TrackEntityApiClient extends BaseEntity {
   constructor (version = 'v1') {
     super(`/api/${version}/tracks`)

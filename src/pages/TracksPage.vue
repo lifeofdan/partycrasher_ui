@@ -12,11 +12,12 @@
       </div>
       <div class="row items-center content-between">
         <template
-          v-for="track in tracksStore.state.tracks"
+          v-for="track in tracks"
           :key="track.id"
         >
           <MusicCard
             style="min-width: 160px; max-width: 320px;"
+            :img-src="track.img"
             :title="track.title"
             :sub-title="track.metadata.artist"
             :track="track"
@@ -44,11 +45,13 @@ import { useQuasar } from 'quasar'
 import MusicCard from 'src/components/MusicCard.vue'
 import { useTracksStore } from 'src/stores/tracks'
 import { useRoute } from 'vue-router'
+import { TrackEntity, TrackEntityPlusSrcImg } from 'src/api/entity_api/track'
 
 const route = useRoute()
 const searchText = ref('')
 const $q = useQuasar()
 const tracksStore = useTracksStore()
+const tracks = ref<TrackEntityPlusSrcImg[]>([])
 
 function show (grid: boolean) {
   $q.bottomSheet({
@@ -97,7 +100,12 @@ watch(
 onMounted(async () => {
   // We do this because we don't want to fetch all tracks when we are loading the track sub-page
   if (route.name === 'app.tracks') {
-    await tracksStore.fetchTracks()
+    const storeTracks = await tracksStore.fetchTracks()
+
+    for (const aTrack of storeTracks) {
+      const img = aTrack.metadata.pictures.cover_art_front ? await tracksStore.fetchTrackMedia(aTrack.metadata.pictures.cover_art_front) : ''
+      tracks.value.push({ ...aTrack, src: tracksStore.buildTrackUrl(aTrack.id), img })
+    }
   }
 })
 </script>
