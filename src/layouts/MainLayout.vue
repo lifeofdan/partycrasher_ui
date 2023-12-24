@@ -45,6 +45,12 @@
           icon="queue_music"
         />
         <q-route-tab
+          v-if="me?.role === 'admin' || me?.role === 'user'"
+          :to="{name:'app.search'}"
+          label="Search"
+          icon="search"
+        />
+        <q-route-tab
           :to="{name: 'app.profile'}"
           label="Profile"
           icon="account_circle"

@@ -3,14 +3,12 @@
     <div class="col">
       <q-img src="https://cdn.quasar.dev/img/parallax2.jpg">
         <div class="absolute-bottom text-subtitle1 text-center bg-transparent">
-          <template v-if="musicPlayerStore.state.playlistTracks && musicPlayerStore.state.playlistTracks.length">
-            <q-btn
-              color="primary"
-              round
-              icon="play_arrow"
-              @click="showAndPlay"
-            />
-          </template>
+          <q-btn
+            color="primary"
+            round
+            icon="play_arrow"
+            @click="showAndPlay"
+          />
         </div>
       </q-img>
     </div>
@@ -128,6 +126,7 @@ import { useMusicPlayerStore } from 'src/stores/musicPlayer'
 import { usePlaylistsStore } from 'src/stores/playlists'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { makeLiveUpdateClient } from 'src/api/entity_api/live_update'
 
 interface ITrackWithImgSrc extends IGetPlaylistTrack {
   src?: string
@@ -155,7 +154,12 @@ function showAndPlay () {
     musicPlayerStore.reset()
     return
   }
+
+  if (playlistsStore.state.playlistTracks === null) return
+  musicPlayerStore.setPlaylistTracks(playlistsStore.state.playlistTracks)
   musicPlayerStore.setShowPlayer(true)
+  musicPlayerStore.setCurrentIndex(0)
+  musicPlayerStore.initTrackSrc()
   musicPlayerStore.setPlaying(true)
 }
 
@@ -163,8 +167,14 @@ function setIndexAndPlay (index: number) {
   if (musicPlayerStore.state.playing) {
     musicPlayerStore.setPlaying(false)
   }
+  if (musicPlayerStore.state.showPlayer === false) musicPlayerStore.setShowPlayer(true)
+  if (musicPlayerStore.state.playlistTracks === null) {
+    if (playlistsStore.state.playlistTracks === null) return
+    musicPlayerStore.setPlaylistTracks(playlistsStore.state.playlistTracks)
+  }
   musicPlayerStore.setCurrentIndex(index)
   musicPlayerStore.initTrackSrc()
+  musicPlayerStore.setPlaying(true)
 }
 
 function onRemove (index: number) {
@@ -177,7 +187,6 @@ async function remove () {
   if (trackToRemove.value === null) return
   await playlistsStore.removeFromPlaylist(trackToRemove.value.id, route.params.id as string)
 
-  await getTracksAndSetImages()
   removeDialogue.value = false
 }
 
@@ -187,15 +196,18 @@ async function getTracksAndSetImages () {
   if (!currentPlaylist.value) return
   const tracks = await playlistsStore.fetchPlaylistTracks(currentPlaylist.value.id) ?? []
 
-  musicPlayerStore.setPlaylistTracks(tracks)
-
-  if (!musicPlayerStore.state.playlistTracks) return
   tracksWithImages.value = []
 
-  for (const [index, track] of musicPlayerStore.state.playlistTracks.entries()) {
-    tracksWithImages.value.push({ ...track, src: await musicPlayerStore.getTrackPicture(index) })
+  for (const [index, track] of tracks.entries()) {
+    tracksWithImages.value.push({ ...track, src: await playlistsStore.getTrackPicture(index) })
   }
 }
+
+const liveUpdateClient = makeLiveUpdateClient()
+liveUpdateClient.subscribe('playlist_event', async () => {
+  await getTracksAndSetImages()
+})
+
 onMounted(async () => {
   await getTracksAndSetImages()
 })
