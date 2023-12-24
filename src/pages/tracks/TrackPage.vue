@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col">
-      <q-img src="https://cdn.quasar.dev/img/parallax2.jpg">
+      <q-img :src="bannerImgSrc">
         <div class="absolute-bottom text-subtitle1 text-center">
           <template v-if="route.name === 'app.track'">
             <q-btn
@@ -47,7 +47,7 @@
                     square
                     class="q-mr-sm"
                   >
-                    <q-img :src="img" />
+                    <q-img :src="track.img" />
                   </q-avatar>
                 </div>
                 <div class="col flex vertical-middle">
@@ -101,7 +101,7 @@ const albumsStore = useAlbumsStore()
 const tracksStore = useTracksStore()
 const userTrackAudio = new Audio()
 const previewPlaying = ref(false)
-const img = ref('')
+const bannerImgSrc = ref('')
 const tracks = ref<TrackEntityWithSrc[]>([])
 
 function playOrPause (index: number) {
@@ -158,14 +158,16 @@ onMounted(async () => {
       const src = buildTrackUrl(track.id)
       const mediaId = track.metadata.pictures.cover_art_front ?? ''
       const img = await tracksStore.fetchTrackMedia(mediaId)
+      bannerImgSrc.value = img
       tracks.value.push({ ...track, src, img })
     }
     return
   }
 
   if (route.name === 'app.album') {
+    const album = await albumsStore.fetchAlbum(route.params.id as string)
     const albumTracks = await albumsStore.fetchTracks(route.params.id as string)
-
+    bannerImgSrc.value = await tracksStore.fetchTrackMedia(album?.metadata.pictures?.cover_art_front ?? '')
     for (const aTrack of albumTracks) {
       tracks.value.push({ ...aTrack, src: buildTrackUrl(aTrack.id), img: await tracksStore.fetchTrackMedia(aTrack.id) })
     }
