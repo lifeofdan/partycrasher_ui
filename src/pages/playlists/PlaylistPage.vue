@@ -3,11 +3,9 @@
     <div class="col">
       <q-img src="https://cdn.quasar.dev/img/parallax2.jpg">
         <div class="absolute-bottom text-subtitle1 text-center bg-transparent">
-          <q-btn
-            color="primary"
-            round
-            icon="play_arrow"
-            @click="showAndPlay"
+          <MusicPlayBtn
+            fill-btn
+            :playlist-id="playlistId"
           />
         </div>
       </q-img>
@@ -32,34 +30,18 @@
                 >
                   <q-img
                     :src="track.src"
-                    style="clip-path: circle()"
                   >
                     <div class="absolute-center flex flex-center items-end bg-transparent">
-                      <q-spinner-audio
-                        v-show="index === musicPlayerStore.state.currentIndex && musicPlayerStore.state.playing"
-                        color="grey-6"
-                        size="1.5em"
-                      />
+                      <TrackPlayingIndicator :track-id="track.id" />
                     </div>
                   </q-img>
                 </div>
                 <div class="col">
-                  <template v-if="index === musicPlayerStore.state.currentIndex && musicPlayerStore.state.playing">
-                    <q-btn
-                      round
-                      flat
-                      icon="pause"
-                      @click="musicPlayerStore.setPlaying(false)"
-                    />
-                  </template>
-                  <template v-else>
-                    <q-btn
-                      round
-                      flat
-                      icon="play_arrow"
-                      @click="setIndexAndPlay(index)"
-                    />
-                  </template>
+                  <MusicPlayBtn
+                    :track-id="track.id"
+                    :playlist-id="playlistId"
+                    size="25px"
+                  />
                 </div>
               </div>
             </q-item-section>
@@ -127,6 +109,8 @@ import { usePlaylistsStore } from 'src/stores/playlists'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { makeLiveUpdateClient } from 'src/api/entity_api/live_update'
+import MusicPlayBtn from 'src/components/MusicPlayBtn.vue'
+import TrackPlayingIndicator from 'src/components/track/TrackPlayingIndicator.vue'
 
 interface ITrackWithImgSrc extends IGetPlaylistTrack {
   src?: string
@@ -139,6 +123,7 @@ const currentPlaylist = ref<IGetPlaylistsData | null>(null)
 const trackToRemove = ref<IGetPlaylistTrack | null>(null)
 const tracksWithImages = ref<ITrackWithImgSrc[]>([])
 const removeDialogue = ref(false)
+const playlistId: string = (route.params.id || '') as string
 
 async function playOrPause (index: number) {
   if (musicPlayerStore.state.playing && index === musicPlayerStore.state.currentIndex) {
@@ -146,21 +131,6 @@ async function playOrPause (index: number) {
   } else {
     setIndexAndPlay(index)
   }
-}
-
-function showAndPlay () {
-  if (musicPlayerStore.state.playing) {
-    musicPlayerStore.setPlaying(false)
-    musicPlayerStore.reset()
-    return
-  }
-
-  if (playlistsStore.state.playlistTracks === null) return
-  musicPlayerStore.setPlaylistTracks(playlistsStore.state.playlistTracks)
-  musicPlayerStore.setShowPlayer(true)
-  musicPlayerStore.setCurrentIndex(0)
-  musicPlayerStore.initTrackSrc()
-  musicPlayerStore.setPlaying(true)
 }
 
 function setIndexAndPlay (index: number) {

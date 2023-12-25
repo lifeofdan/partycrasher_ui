@@ -24,7 +24,7 @@
     </q-header>
 
     <q-footer class="bg-transparent">
-      <MusicPlayer v-show="musicPlayerStore.state.showPlayer" />
+      <MusicPlayer />
       <q-tabs
         no-caps
         active-color="primary"

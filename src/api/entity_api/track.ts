@@ -1,5 +1,6 @@
 import { BaseEntity, PaginatorClient } from '.'
 import { IResponse } from '../client'
+import { makeMediaClient } from './media'
 
 export interface TrackEntityMetadata {
   title: string
@@ -33,13 +34,13 @@ class TrackEntityApiClient extends BaseEntity {
     return await this.doGet(`/album/${albumId}`)
   }
 
-  public async stream (track: string | TrackEntity): Promise<string> {
-    const base = new BaseEntity('/api/v1/stream/')
-    return URL.createObjectURL(await base.doGetBlob((typeof track === 'string') ? track : track.id))
+  public async byPlaylist (playlistId: string): Promise<IResponse<TrackEntity[]>> {
+    return await this.doGet(`/playlist/${playlistId}`)
   }
 
-  public async player (track: string | TrackEntity): Promise<HTMLAudioElement> {
-    return new Audio(await this.stream(track))
+  public async stream (track: string | TrackEntity): Promise<string> {
+    const mediaClient = makeMediaClient()
+    return await mediaClient.byTrackId((typeof track === 'string') ? track : track.id)
   }
 
   public all (): PaginatorClient<TrackEntity> {

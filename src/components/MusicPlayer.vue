@@ -3,7 +3,7 @@
     class="row bg-white text-dark"
     style="border-top: 1px solid rgba(0, 0, 0, 0.12); border-bottom: 1px solid rgba(0, 0, 0, 0.12);"
   >
-    <div class="col-6 q-my-sm">
+    <div class="col-12 col-md-6 q-my-sm">
       <template v-if="musicPlayerStore.state.playlistTracks">
         <div class="q-ml-sm">
           <template v-if="coverImageUrl">
@@ -25,41 +25,14 @@
         </div>
       </template>
     </div>
-    <div class="col-6 justify-end flex vertical-middle">
-      <q-btn
-        round
-        flat
-        color="primary"
-        :disable="!musicPlayerStore.state.canPrevious"
-        icon="fast_rewind"
-        @click="previous"
-      />
-      <template v-if="!musicPlayerStore.state.playing">
-        <q-btn
-          round
-          flat
-          color="primary"
-          icon="play_arrow"
-          @click="play"
-        />
-      </template>
-      <template v-if="musicPlayerStore.state.playing">
-        <q-btn
-          round
-          flat
-          color="primary"
-          icon="pause"
-          @click="pause"
-        />
-      </template>
-      <q-btn
-        round
-        flat
-        :disable="!musicPlayerStore.state.canNext"
-        color="primary"
-        icon="fast_forward"
-        @click="next"
-      />
+    <div class="col-12 col-md-6 justify-center justify-md-end flex vertical-middle">
+      <div>
+        <MusicRepeatBtn />
+        <MusicPreviousBtn />
+        <MusicPlayBtn />
+        <MusicNextBtn />
+        <MusicShuffleBtn />
+      </div>
     </div>
   </div>
 </template>
@@ -70,6 +43,11 @@ import { useMusicPlayerStore } from 'src/stores/musicPlayer'
 import { watch, ref } from 'vue'
 import { PlaylistEvent, TopicPayload, makeLiveUpdateClient } from 'src/api/entity_api/live_update'
 import { usePlaylistsStore } from 'src/stores/playlists'
+import MusicPlayBtn from './MusicPlayBtn.vue'
+import MusicNextBtn from './MusicNextBtn.vue'
+import MusicPreviousBtn from './MusicPreviousBtn.vue'
+import MusicShuffleBtn from './MusicShuffleBtn.vue'
+import MusicRepeatBtn from './MusicRepeatBtn.vue'
 
 const musicPlayerStore = useMusicPlayerStore()
 const playlistsStore = usePlaylistsStore()

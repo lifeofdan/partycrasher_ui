@@ -49,7 +49,7 @@ const routes: RouteRecordRaw[] = [
         component: async () => await import('pages/SearchPage.vue')
       },
       {
-        component: async () => await import('pages/PlaylistsPage.vue'),
+        component: async () => await import('pages/PlaylistsIndexPage.vue'),
         name: 'app.playlists',
         path: 'playlists',
         meta: { title: 'Playlists' },
