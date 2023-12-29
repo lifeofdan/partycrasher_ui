@@ -60,17 +60,17 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
   })
 
   player.addEventListener('ended', () => {
+    if (playing.repeat === 'one' && playTrack !== undefined) {
+      void playTrack(playing.track_id)
+      return
+    }
+
     if (playing.shuffle && playing.tracks.length > 0 && playTrack !== undefined) {
       let nextId = ''
       do {
         nextId = playing.tracks[Math.floor(Math.random() * playing.tracks.length - 1)].id
       } while (nextId === playing.track_id)
       void playTrack(nextId)
-      return
-    }
-
-    if (playing.repeat === 'one' && playTrack !== undefined) {
-      void playTrack(playing.track_id)
       return
     }
 
