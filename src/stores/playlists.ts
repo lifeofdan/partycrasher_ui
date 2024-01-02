@@ -4,6 +4,7 @@ import { reactive, ref } from 'vue'
 import { makePlaylistClient } from 'src/api/entity_api/playlist'
 import { useMusicPlayerStore } from './musicPlayer'
 import { useTracksStore } from './tracks'
+import { TrackEntity } from 'src/api/entity_api/track'
 
 export const usePlaylistsStore = defineStore('playlists', () => {
   const tracksStore = useTracksStore()
@@ -46,17 +47,9 @@ export const usePlaylistsStore = defineStore('playlists', () => {
       useMusicPlayerStore().setPlaylistTracks(playlistTracks.value)
     },
 
-    async getTrackPicture (index: number): Promise<string> {
-      if (playlistTracks.value === null) return ''
-      const tracks = playlistTracks.value[index]
-
-      if (tracks === undefined) return ''
-      const pictures = tracks.metadata.pictures
-      if (pictures === undefined) return ''
-      const art = tracks.metadata.pictures.cover_art_front
-
-      if (art === undefined) return ''
-      return await tracksStore.fetchTrackMedia(art ?? '')
+    getTrackPicture (track: TrackEntity): string {
+      const art = track.metadata.pictures.cover_art_front
+      return (art) ? tracksStore.fetchTrackMedia(art) : '/album.jpeg'
     }
   }
 
