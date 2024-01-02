@@ -1,12 +1,14 @@
 <template>
   <div class="row">
     <div class="col">
-      <q-img src="https://cdn.quasar.dev/img/parallax2.jpg">
+      <q-img :src="mainArt">
         <div class="absolute-bottom text-subtitle1 text-center">
           <template v-if="route.name === 'app.track'">
-            <MusicPlayBtn
-              fill-btn
-              :track-id="($route.params.id as string)"
+            <q-btn
+              color="primary"
+              icon="queue_music"
+              label="Add to playlist"
+              @click="tracksStore.addTrackToDefaultPlaylist($route.params.id as string)"
             />
           </template>
           <template v-if="route.name === 'app.album'">
