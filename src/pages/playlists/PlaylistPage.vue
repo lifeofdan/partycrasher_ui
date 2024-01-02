@@ -167,8 +167,8 @@ async function getTracksAndSetImages () {
   const tracks = await playlistsStore.fetchPlaylistTracks(currentPlaylist.value.id) ?? []
 
   const tracksWithImgs = []
-  for (const [index, track] of tracks.entries()) {
-    tracksWithImgs.push({ ...track, src: await playlistsStore.getTrackPicture(index) })
+  for (const track of tracks) {
+    tracksWithImgs.push({ ...track, src: playlistsStore.getTrackPicture(track) })
   }
 
   tracksWithImages.value = tracksWithImgs
