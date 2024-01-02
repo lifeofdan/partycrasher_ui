@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { makeMediaClient } from 'src/api/entity_api/media'
 import { TrackEntity, makeTrackClient } from 'src/api/entity_api/track'
 import { computed, reactive } from 'vue'
 
@@ -9,7 +10,7 @@ export interface AudioCurrentlyPlayling {
   state: 'playing' | 'pause' | 'stop' | 'ended'
   album_id: string
   tracks: TrackEntity[]
-  track_id: string
+  track: TrackEntity | null
   track_index: number
   progress: number
   duration: number
@@ -19,6 +20,7 @@ export interface AudioCurrentlyPlayling {
 }
 
 const trackClient = makeTrackClient()
+const mediaClient = makeMediaClient()
 
 function makeDefaultPlaying (): AudioCurrentlyPlayling {
   return {
@@ -26,7 +28,7 @@ function makeDefaultPlaying (): AudioCurrentlyPlayling {
     album_id: '',
     state: 'stop',
     tracks: [],
-    track_id: '',
+    track: null,
     track_index: 0,
     duration: 0,
     progress: 0,
@@ -60,21 +62,21 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
   })
 
   player.addEventListener('ended', () => {
-    if (playing.repeat === 'one' && playTrack !== undefined) {
-      void playTrack(playing.track_id)
+    if (playing.repeat === 'one' && playing.track) {
+      void playTrack(playing.track.id)
       return
     }
 
-    if (playing.shuffle && playing.tracks.length > 0 && playTrack !== undefined) {
-      let nextId = ''
+    if (playing.shuffle && playing.tracks.length > 0) {
+      let nextTrack: TrackEntity
       do {
-        nextId = playing.tracks[Math.floor(Math.random() * playing.tracks.length - 1)].id
-      } while (nextId === playing.track_id)
-      void playTrack(nextId)
+        nextTrack = playing.tracks[Math.floor(Math.random() * playing.tracks.length - 1)]
+      } while (playing.track && nextTrack.id === playing.track.id)
+      void playTrack(nextTrack.id)
       return
     }
 
-    if (playing.repeat === 'all' && playNext !== undefined) {
+    if (playing.repeat === 'all') {
       void playNext()
       return
     }
@@ -84,13 +86,14 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
 
   const progress = computed(() => playing.progress)
   const state = computed(() => playing.state)
-  const trackPlayling = computed(() => playing.track_id)
+  const trackPlayling = computed(() => playing.track)
   const playlistPlayling = computed(() => playing.playlist_id)
   const albumPlayling = computed(() => playing.album_id)
   const shuffling = computed(() => playing.shuffle)
   const repeatMode = computed(() => playing.repeat)
+  const albumImg = computed(() => playing.track?.metadata.pictures.cover_art_front ? mediaClient.byId(playing.track?.metadata.pictures.cover_art_front) : '/album.jpeg')
   const oneOf = computed(() => (trackId: string, playlistId: string, albumId: string) => {
-    if (trackId.length > 0 && trackId === playing.track_id) {
+    if (trackId.length > 0 && trackId === playing.track?.id) {
       return true
     }
     if (playlistId.length <= 0 && albumId.length <= 0) {
@@ -133,7 +136,7 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
   }
 
   async function togglePlay (): Promise<void> {
-    if (playing.track_id !== null) {
+    if (playing.track !== null) {
       if (playing.state === 'playing') {
         player.pause()
       } else {
@@ -142,33 +145,35 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
     }
   }
 
-  async function playTrack (id: string, playlistId = '', albumId = ''): Promise<void> {
+  async function playTrack (track: string | TrackEntity, playlistId = '', albumId = ''): Promise<void> {
     if (playlistId.length > 0) {
-      return await playPlaylist(playlistId, id)
+      return await playPlaylist(playlistId, track)
     }
 
     if (albumId.length > 0) {
-      return await playAlbum(albumId, id)
+      return await playAlbum(albumId, track)
     }
 
-    playing.track_id = ''
+    playing.track = null
     player.pause()
     player.currentTime = 0
-    player.src = await trackClient.stream(id)
-    playing.track_id = id
+    player.src = await trackClient.stream(track)
+    playing.track = (typeof track === 'string') ? (await trackClient.byId(track)).data : track
     await player.play()
   }
 
-  async function playPlaylist (id: string, trackId = ''): Promise<void> {
+  async function playPlaylist (id: string, track: TrackEntity | string = ''): Promise<void> {
     const response = await trackClient.byPlaylist(id)
+    const trackId = (typeof track === 'string') ? track : track.id
+
     if (response.success) {
       playing.playlist_id = id
       playing.album_id = ''
       playing.tracks = response.data ?? []
       if (playing.tracks.length > 0) {
         if (trackId.length > 0) {
-          playing.tracks.find((track, index) => {
-            if (track.id === trackId) {
+          playing.tracks.find((aTrack, index) => {
+            if (aTrack.id === trackId) {
               playing.track_index = index
               return true
             }
@@ -177,21 +182,22 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
         } else {
           playing.track_index = 0
         }
-        await playTrack(playing.tracks[playing.track_index].id)
+        await playTrack(playing.tracks[playing.track_index])
       }
     }
   }
 
-  async function playAlbum (id: string, trackId = ''): Promise<void> {
+  async function playAlbum (id: string, track: TrackEntity | string = ''): Promise<void> {
     const response = await trackClient.byAlbum(id)
+    const trackId = (typeof track === 'string') ? track : track.id
     if (response.success) {
       playing.album_id = id
       playing.playlist_id = ''
       playing.tracks = response.data ?? []
       if (playing.tracks.length > 0) {
         if (trackId.length > 0) {
-          playing.tracks.find((track, index) => {
-            if (track.id === trackId) {
+          playing.tracks.find((aTrack, index) => {
+            if (aTrack.id === trackId) {
               playing.track_index = index
               return true
             }
@@ -201,7 +207,7 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
           playing.track_index = 0
         }
 
-        await playTrack(playing.tracks[playing.track_index].id)
+        await playTrack(playing.tracks[playing.track_index])
       }
     }
   }
@@ -230,6 +236,7 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
     shuffling,
     repeatMode,
     oneOf,
+    albumImg,
     stop,
     pause,
     resume,
