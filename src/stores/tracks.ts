@@ -20,6 +20,14 @@ export const useTracksStore = defineStore('tracks', () => {
       return tracks.value
     },
 
+    imageOrFallback (track: IGetTrackData): string {
+      if (track.metadata.pictures.cover_art_front) {
+        return mediaClient.byId(track.metadata.pictures.cover_art_front)
+      } else {
+        return '/album.jpeg'
+      }
+    },
+
     async fetchTrack (id: string): Promise<TrackEntity | null> {
       const response = await trackClient.byId(id)
 
