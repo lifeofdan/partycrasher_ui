@@ -28,8 +28,8 @@ export const useTracksStore = defineStore('tracks', () => {
       return selectedTrack.value
     },
 
-    async fetchTrackMedia (mediaId: string) {
-      return await mediaClient.byId(mediaId)
+    fetchTrackMedia (mediaId: string): string {
+      return mediaClient.byId(mediaId)
     },
 
     async addTrackToDefaultPlaylist (trackId: string) {
