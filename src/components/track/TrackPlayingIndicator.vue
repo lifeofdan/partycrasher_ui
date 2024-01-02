@@ -1,6 +1,6 @@
 <template>
   <q-spinner-audio
-    v-show="musicPlayerStore.trackPlayling === trackId && musicPlayerStore.state === 'playing'"
+    v-show="musicPlayerStore.trackPlayling?.id === trackId && musicPlayerStore.state === 'playing'"
     :color="color"
     :size="size"
   />
