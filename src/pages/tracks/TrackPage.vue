@@ -40,12 +40,15 @@
               avatar
             >
               <div class="row">
-                <div class="col">
+                <div
+                  class="col flex flex-center"
+                  style="min-width: 40px"
+                >
                   <q-avatar
                     square
                     class="q-mr-sm"
                   >
-                    <q-img :src="img" />
+                    <q-img :src="track.img" />
                   </q-avatar>
                 </div>
                 <div class="col flex vertical-middle">
@@ -66,8 +69,7 @@
 <script setup lang="ts">
 import { useTracksStore } from 'src/stores/tracks'
 import { useAlbumsStore } from 'src/stores/albums'
-import { useMusicPlayerStore } from 'src/stores/musicPlayer'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { LocalStorage } from 'quasar'
 import { TrackEntity } from 'src/api/entity_api/track'
@@ -78,18 +80,10 @@ interface TrackEntityWithSrc extends TrackEntity {
   img: string
 }
 const route = useRoute()
-const musicPlayerStore = useMusicPlayerStore()
 const albumsStore = useAlbumsStore()
 const tracksStore = useTracksStore()
-const userTrackAudio = new Audio()
-const previewPlaying = ref(false)
-const img = ref('')
 const tracks = ref<TrackEntityWithSrc[]>([])
-
-function pausePreview () {
-  previewPlaying.value = false
-  userTrackAudio.pause()
-}
+const mainArt = ref('/album.jpeg')
 
 function buildTrackUrl (trackId: string): string {
   const token: string = LocalStorage.getItem('pc_token') ?? ''
@@ -104,35 +98,22 @@ function addAlbumToPlaylist () {
   })
 }
 
-watch(
-  () => musicPlayerStore.state.playing,
-  (status) => {
-    if (status) {
-      pausePreview()
-    }
-  }
-)
-
 onMounted(async () => {
-  if (!route.params.id) return
+  let albumTracks:TrackEntity[] = []
   if (route.name === 'app.track') {
     const track = await tracksStore.fetchTrack(route.params.id as string)
-
     if (track !== null) {
-      const src = buildTrackUrl(track.id)
-      const mediaId = track.metadata.pictures.cover_art_front ?? ''
-      const img = await tracksStore.fetchTrackMedia(mediaId)
-      tracks.value.push({ ...track, src, img })
+      albumTracks.push(track)
     }
-    return
+  } else if (route.name === 'app.album') {
+    albumTracks = await albumsStore.fetchTracks(route.params.id as string)
   }
 
-  if (route.name === 'app.album') {
-    const albumTracks = await albumsStore.fetchTracks(route.params.id as string)
-
-    for (const aTrack of albumTracks) {
-      tracks.value.push({ ...aTrack, src: buildTrackUrl(aTrack.id), img: await tracksStore.fetchTrackMedia(aTrack.id) })
-    }
+  for (const aTrack of albumTracks) {
+    const mediaId = aTrack.metadata.pictures.cover_art_front ?? ''
+    const img = (mediaId) ? tracksStore.fetchTrackMedia(mediaId) : '/album.jpeg'
+    mainArt.value = img
+    tracks.value.push({ ...aTrack, src: buildTrackUrl(aTrack.id), img })
   }
 })
 </script>
