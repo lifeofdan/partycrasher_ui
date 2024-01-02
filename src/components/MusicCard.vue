@@ -29,7 +29,7 @@ const props = withDefaults(
   defineProps<{
     title: string,
     subTitle?: string,
-    img: string,
+    img?: string,
     playlist?: IGetPlaylistsData,
     track?: IGetTrackData
     search?: SearchEntity
