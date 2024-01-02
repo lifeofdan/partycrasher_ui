@@ -4,11 +4,9 @@
       <q-img src="https://cdn.quasar.dev/img/parallax2.jpg">
         <div class="absolute-bottom text-subtitle1 text-center">
           <template v-if="route.name === 'app.track'">
-            <q-btn
-              color="primary"
-              icon="queue_music"
-              label="Add to playlist"
-              @click="tracksStore.addTrackToDefaultPlaylist($route.params.id as string)"
+            <MusicPlayBtn
+              fill-btn
+              :track-id="($route.params.id as string)"
             />
           </template>
           <template v-if="route.name === 'app.album'">
@@ -30,13 +28,11 @@
         separator
       >
         <template
-          v-for="(track, index) in tracks"
+          v-for="track in tracks"
           :key="track.id"
         >
           <q-item
             v-ripple
-            clickable
-            @click="playOrPause(index)"
           >
             <q-item-section
               avatar
@@ -51,26 +47,9 @@
                   </q-avatar>
                 </div>
                 <div class="col flex vertical-middle">
-                  <template v-if="!previewPlaying">
-                    <q-btn
-                      round
-                      flat
-                      icon="play_arrow"
-                    />
-                  </template>
-                  <template v-else>
-                    <q-btn
-                      round
-                      flat
-                      icon="pause"
-                    />
-                  </template>
+                  <MusicPlayBtn :track-id="track.id" />
                 </div>
               </div>
-            <!-- <q-spinner-audio
-              color="primary"
-              size="2em"
-            /> -->
             </q-item-section>
             <q-item-section>
               {{ track.title ?? "&nbsp;" }}
@@ -90,6 +69,7 @@ import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { LocalStorage } from 'quasar'
 import { TrackEntity } from 'src/api/entity_api/track'
+import MusicPlayBtn from 'src/components/MusicPlayBtn.vue'
 
 interface TrackEntityWithSrc extends TrackEntity {
   src: string
@@ -103,24 +83,6 @@ const userTrackAudio = new Audio()
 const previewPlaying = ref(false)
 const img = ref('')
 const tracks = ref<TrackEntityWithSrc[]>([])
-
-function playOrPause (index: number) {
-  if (previewPlaying.value) {
-    pausePreview()
-  } else {
-    userTrackAudio.src = tracks.value[index].src
-    playPreview()
-  }
-}
-
-function playPreview () {
-  if (musicPlayerStore.state.playing) {
-    musicPlayerStore.setPlaying(false)
-  }
-
-  previewPlaying.value = true
-  userTrackAudio.play()
-}
 
 function pausePreview () {
   previewPlaying.value = false
@@ -172,7 +134,3 @@ onMounted(async () => {
   }
 })
 </script>
-
-<style scoped>
-
-</style>
