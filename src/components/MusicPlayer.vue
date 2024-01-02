@@ -110,13 +110,6 @@ async function next () {
   coverImageUrl.value = await musicPlayerStore.getTrackPicture(musicPlayerStore.state.currentIndex)
 }
 
-async function previous () {
-  musicPlayerStore.setPlaying(true)
-  trackAudio.src = await fetchPreviousSongUrl()
-  trackAudio.play()
-  coverImageUrl.value = await musicPlayerStore.getTrackPicture(musicPlayerStore.state.currentIndex)
-}
-
 function initTrackSrc (index: number) {
   if (!musicPlayerStore.state.playlistTracks) return
   trackAudio.src = buildTrackUrl(musicPlayerStore.state.playlistTracks[index].id)
@@ -127,12 +120,6 @@ function buildTrackUrl (trackId: string): string {
   const API_URL = process.env.API_URL ?? ''
 
   return `${API_URL}/api/v1/stream/${trackId}?_token=${token}`
-}
-
-async function fetchPreviousSongUrl (): Promise<string> {
-  if (!musicPlayerStore.state.playlistTracks) return ''
-  musicPlayerStore.setCurrentIndex(musicPlayerStore.state.currentIndex - 1)
-  return buildTrackUrl(musicPlayerStore.state.playlistTracks[musicPlayerStore.state.currentIndex].id)
 }
 
 async function fetchNextSongUrl (): Promise<string> {
@@ -189,7 +176,3 @@ watch(
   }
 )
 </script>
-
-<style scoped>
-
-</style>
