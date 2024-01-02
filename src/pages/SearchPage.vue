@@ -28,6 +28,7 @@
                   :key="track.id"
                 >
                   <MusicCard
+                    style="min-width: 320px; max-width: 320px;"
                     :search="track"
                     :title="track.metadata.title"
                     :sub-title="track.metadata.entity_metadata.album"
@@ -47,6 +48,7 @@
                   :key="album.id"
                 >
                   <MusicCard
+                    style="min-width: 320px; max-width: 320px;"
                     :search="album"
                     :title="album.metadata.title"
                   />

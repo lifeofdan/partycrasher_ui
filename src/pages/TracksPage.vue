@@ -16,10 +16,11 @@
           :key="track.id"
         >
           <MusicCard
-            style="min-width: 160px; max-width: 320px;"
+            style="min-width: 320px; max-width: 320px;"
             :title="track.title"
-            :sub-title="track.metadata.artist"
+            :sub-title="track.metadata.artist || '&nbsp;'"
             :track="track"
+            :img="tracksStore.imageOrFallback(track)"
           />
         </template>
       </div>

@@ -20,6 +20,14 @@ export const useTracksStore = defineStore('tracks', () => {
       return tracks.value
     },
 
+    imageOrFallback (track: IGetTrackData): string {
+      if (track.metadata.pictures.cover_art_front) {
+        return mediaClient.byId(track.metadata.pictures.cover_art_front)
+      } else {
+        return '/album.jpeg'
+      }
+    },
+
     async fetchTrack (id: string): Promise<TrackEntity | null> {
       const response = await trackClient.byId(id)
 
@@ -28,8 +36,8 @@ export const useTracksStore = defineStore('tracks', () => {
       return selectedTrack.value
     },
 
-    async fetchTrackMedia (mediaId: string) {
-      return await mediaClient.byId(mediaId)
+    fetchTrackMedia (mediaId: string): string {
+      return mediaClient.byId(mediaId)
     },
 
     async addTrackToDefaultPlaylist (trackId: string) {
