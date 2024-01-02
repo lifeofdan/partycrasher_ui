@@ -93,9 +93,6 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
     if (trackId.length > 0 && trackId === playing.track_id) {
       return true
     }
-    if (trackId !== playing.track_id) {
-      return false
-    }
 
     if ((playlistId.length > 0 && playlistId === playing.playlist_id) || (albumId.length > 0 && albumId === playing.album_id)) {
       return true
