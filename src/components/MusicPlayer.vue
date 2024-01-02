@@ -4,26 +4,18 @@
     style="border-top: 1px solid rgba(0, 0, 0, 0.12); border-bottom: 1px solid rgba(0, 0, 0, 0.12);"
   >
     <div class="col-12 col-md-6 q-my-sm">
-      <template v-if="musicPlayerStore.state.playlistTracks">
-        <div class="q-ml-sm">
-          <template v-if="coverImageUrl">
-            <q-avatar
-              square
-              class="q-mr-sm"
-            >
-              <img :src="coverImageUrl">
-            </q-avatar>
-          </template>
-          <template v-else>
-            <q-avatar
-              square
-              class="q-mr-sm"
-              icon="music_note"
-            />
-          </template>
-          {{ musicPlayerStore.state.playlistTracks[musicPlayerStore.state.currentIndex]?.title }}
-        </div>
-      </template>
+      <div
+        v-if="musicPlayerStore2.trackPlayling"
+        class="q-ml-sm"
+      >
+        <q-avatar
+          square
+          class="q-mr-sm"
+        >
+          <img :src="musicPlayerStore2.albumImg">
+        </q-avatar>
+        {{ musicPlayerStore2.trackPlayling?.title }}
+      </div>
     </div>
     <div class="col-12 col-md-6 justify-center justify-md-end flex vertical-middle">
       <div>
@@ -40,6 +32,7 @@
 <script setup lang="ts">
 import { LocalStorage } from 'quasar'
 import { useMusicPlayerStore } from 'src/stores/musicPlayer'
+import { useMusicPlayerStore2 } from 'src/stores/musicPlayer2'
 import { watch, ref } from 'vue'
 import { PlaylistEvent, TopicPayload, makeLiveUpdateClient } from 'src/api/entity_api/live_update'
 import { usePlaylistsStore } from 'src/stores/playlists'
@@ -50,6 +43,7 @@ import MusicShuffleBtn from './MusicShuffleBtn.vue'
 import MusicRepeatBtn from './MusicRepeatBtn.vue'
 
 const musicPlayerStore = useMusicPlayerStore()
+const musicPlayerStore2 = useMusicPlayerStore2()
 const playlistsStore = usePlaylistsStore()
 const trackAudio = new Audio()
 const coverImageUrl = ref('')
