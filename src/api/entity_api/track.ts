@@ -38,9 +38,9 @@ class TrackEntityApiClient extends BaseEntity {
     return await this.doGet(`/playlist/${playlistId}`)
   }
 
-  public async stream (track: string | TrackEntity): Promise<string> {
+  public stream (track: string | TrackEntity): string {
     const mediaClient = makeMediaClient()
-    return await mediaClient.byTrackId((typeof track === 'string') ? track : track.id)
+    return mediaClient.byTrackId((typeof track === 'string') ? track : track.id)
   }
 
   public all (): PaginatorClient<TrackEntity> {
