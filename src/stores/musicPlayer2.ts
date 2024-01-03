@@ -11,6 +11,7 @@ export interface AudioCurrentlyPlaying {
   album_id: string
   tracks: TrackEntity[]
   track: TrackEntity | null
+  volume: number
   track_index: number
   progress: number
   duration: number
@@ -29,6 +30,7 @@ function makeDefaultPlaying (): AudioCurrentlyPlaying {
     state: 'stop',
     tracks: [],
     track: null,
+    volume: 30,
     track_index: 0,
     duration: 0,
     progress: 0,
@@ -41,6 +43,8 @@ function makeDefaultPlaying (): AudioCurrentlyPlaying {
 export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
   const player = new Audio()
   const playing = reactive(makeDefaultPlaying())
+
+  player.volume = playing.volume / 100
 
   player.addEventListener('timeupdate', () => {
     playing.at = player.currentTime
@@ -95,6 +99,7 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
     const coverArt = playing.track?.metadata.pictures.cover_art_front ?? null
     return coverArt !== null ? mediaClient.byId(coverArt) : '/album.jpeg'
   })
+  const volume = computed(() => playing.volume)
   const oneOf = computed(() => (trackId: string, playlistId: string, albumId: string) => {
     if (trackId.length > 0 && trackId === playing.track?.id) {
       return true
@@ -230,6 +235,11 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
     }
   }
 
+  function setVolume (volume: number): void {
+    player.volume = volume / 100
+    playing.volume = volume
+  }
+
   return {
     progress,
     state,
@@ -240,6 +250,7 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
     repeatMode,
     oneOf,
     albumImg,
+    volume,
     stop,
     pause,
     resume,
@@ -250,6 +261,7 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
     playPlaylist,
     playAlbum,
     playNext,
-    playPrevious
+    playPrevious,
+    setVolume
   }
 })
