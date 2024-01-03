@@ -5,7 +5,7 @@
   >
     <div class="col-12 col-md-6 q-my-sm">
       <div
-        v-if="musicPlayerStore2.trackPlayling"
+        v-if="musicPlayerStore2.trackPlaying"
         class="q-ml-sm"
       >
         <q-avatar
@@ -14,7 +14,7 @@
         >
           <img :src="musicPlayerStore2.albumImg">
         </q-avatar>
-        {{ musicPlayerStore2.trackPlayling?.title }}
+        {{ musicPlayerStore2.trackPlaying?.title }}
       </div>
     </div>
     <div class="col-12 col-md-6 justify-center justify-md-end flex vertical-middle">

@@ -5,7 +5,7 @@ import { computed, reactive } from 'vue'
 
 export type RepeatMode = 'off' | 'one' | 'all'
 
-export interface AudioCurrentlyPlayling {
+export interface AudioCurrentlyPlaying {
   playlist_id: string
   state: 'playing' | 'pause' | 'stop' | 'ended'
   album_id: string
@@ -22,7 +22,7 @@ export interface AudioCurrentlyPlayling {
 const trackClient = makeTrackClient()
 const mediaClient = makeMediaClient()
 
-function makeDefaultPlaying (): AudioCurrentlyPlayling {
+function makeDefaultPlaying (): AudioCurrentlyPlaying {
   return {
     playlist_id: '',
     album_id: '',
@@ -62,7 +62,7 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
   })
 
   player.addEventListener('ended', () => {
-    if (playing.repeat === 'one' && playing.track) {
+    if (playing.repeat === 'one' && playing.track !== null) {
       void playTrack(playing.track.id)
       return
     }
@@ -71,7 +71,7 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
       let nextTrack: TrackEntity
       do {
         nextTrack = playing.tracks[Math.floor(Math.random() * playing.tracks.length - 1)]
-      } while (playing.track && nextTrack.id === playing.track.id)
+      } while (playing.track !== null && nextTrack.id === playing.track.id)
       void playTrack(nextTrack.id)
       return
     }
@@ -86,12 +86,15 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
 
   const progress = computed(() => playing.progress)
   const state = computed(() => playing.state)
-  const trackPlayling = computed(() => playing.track)
-  const playlistPlayling = computed(() => playing.playlist_id)
-  const albumPlayling = computed(() => playing.album_id)
+  const trackPlaying = computed(() => playing.track)
+  const playlistPlaying = computed(() => playing.playlist_id)
+  const albumPlaying = computed(() => playing.album_id)
   const shuffling = computed(() => playing.shuffle)
   const repeatMode = computed(() => playing.repeat)
-  const albumImg = computed(() => playing.track?.metadata.pictures.cover_art_front ? mediaClient.byId(playing.track?.metadata.pictures.cover_art_front) : '/album.jpeg')
+  const albumImg = computed(() => {
+    const coverArt = playing.track?.metadata.pictures.cover_art_front ?? null
+    return coverArt !== null ? mediaClient.byId(coverArt) : '/album.jpeg'
+  })
   const oneOf = computed(() => (trackId: string, playlistId: string, albumId: string) => {
     if (trackId.length > 0 && trackId === playing.track?.id) {
       return true
@@ -230,9 +233,9 @@ export const useMusicPlayerStore2 = defineStore('musicPlayer2', () => {
   return {
     progress,
     state,
-    trackPlayling,
-    playlistPlayling,
-    albumPlayling,
+    trackPlaying,
+    playlistPlaying,
+    albumPlaying,
     shuffling,
     repeatMode,
     oneOf,
