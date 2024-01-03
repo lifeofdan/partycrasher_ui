@@ -21,12 +21,16 @@
             <q-avatar
               square
               class="q-mr-sm"
+              style="height: 60px;width: 60px;"
             >
               <img :src="musicPlayerStore2.albumImg">
             </q-avatar>
           </div>
           <div class="col-8">
             <div>{{ musicPlayerStore2.trackPlaying?.title }}</div>
+            <div>
+              {{ musicPlayerStore2.trackPlaying.metadata.artist }}
+            </div>
             {{ musicPlayerStore2.trackPlaying.metadata.album }}
           </div>
         </div>
