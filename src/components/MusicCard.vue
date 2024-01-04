@@ -9,10 +9,10 @@
       <q-img :src="img" />
 
       <q-card-section>
-        <div class="text-h6">
+        <div class="text-subtitle2">
           {{ title }}
         </div>
-        <div class="text-subtitle2">
+        <div class="text-subtitle3">
           {{ subTitle }}
         </div>
       </q-card-section>
