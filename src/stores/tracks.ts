@@ -21,8 +21,9 @@ export const useTracksStore = defineStore('tracks', () => {
     },
 
     imageOrFallback (track: IGetTrackData): string {
-      if (track.metadata.pictures.cover_art_front) {
-        return mediaClient.byId(track.metadata.pictures.cover_art_front)
+      const art = track.metadata.pictures.cover_art_front
+      if (art !== null) {
+        return mediaClient.byId(art as string)
       } else {
         return '/album.jpeg'
       }

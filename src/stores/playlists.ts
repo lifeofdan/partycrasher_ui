@@ -49,7 +49,7 @@ export const usePlaylistsStore = defineStore('playlists', () => {
 
     getTrackPicture (track: TrackEntity): string {
       const art = track.metadata.pictures.cover_art_front
-      return (art) ? tracksStore.fetchTrackMedia(art) : '/album.jpeg'
+      return (art !== null) ? tracksStore.fetchTrackMedia(art as string) : '/album.jpeg'
     }
   }
 
