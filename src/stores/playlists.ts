@@ -50,6 +50,13 @@ export const usePlaylistsStore = defineStore('playlists', () => {
     getTrackPicture (track: TrackEntity): string {
       const art = track.metadata.pictures.cover_art_front
       return (art !== null) ? tracksStore.fetchTrackMedia(art as string) : '/album.jpeg'
+    },
+    coverArt (playlist: IGetPlaylistsData): string {
+      if (playlist.id === '') {
+        return ''
+      }
+      // TODO: generate an image on the fly or something...🤷‍♂️
+      return '/album.jpeg'
     }
   }
 
