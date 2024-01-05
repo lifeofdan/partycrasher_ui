@@ -59,7 +59,7 @@ const routes: RouteRecordRaw[] = [
         meta: { title: 'Albums' }
       },
       {
-        component: async () => await import('pages/album/AlbumPage.vue'),
+        component: async () => await import('pages/albums/AlbumPage.vue'),
         name: 'app.album',
         path: 'albums/:id',
         meta: { title: 'Album', child: true }
