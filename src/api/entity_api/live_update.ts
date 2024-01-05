@@ -61,9 +61,13 @@ class LiveUpdateClient {
     this.endpoint = endpoint
     const token = localStorage.getItem('pc_token') ?? ''
     let host = (window.location.protocol === 'http:' ? 'wss://' : 'ws://') + window.location.host
-    if (process?.env.API_URL !== undefined) {
-      host = process.env.API_URL.replace('http', 'ws')
-        .replace('https', 'wss')
+    try {
+      if ((process || false) && process?.env.API_URL !== undefined) {
+        host = process.env.API_URL.replace('http', 'ws')
+          .replace('https', 'wss')
+      }
+    } catch (_) {
+      // gracefully ignore undefined `process`
     }
 
     this.ws = new WebSocket(`${host}${this.endpoint}?_token=${token}`)
