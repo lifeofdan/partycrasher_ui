@@ -6,13 +6,13 @@
     style="text-decoration: none;"
   >
     <q-card class="my-card q-mx-md q-my-md">
-      <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" />
+      <q-img :src="img" />
 
       <q-card-section>
-        <div class="text-h6">
+        <div class="text-subtitle2">
           {{ title }}
         </div>
-        <div class="text-subtitle2">
+        <div class="text-subtitle3">
           {{ subTitle }}
         </div>
       </q-card-section>
@@ -29,6 +29,7 @@ const props = withDefaults(
   defineProps<{
     title: string,
     subTitle?: string,
+    img?: string,
     playlist?: IGetPlaylistsData,
     track?: IGetTrackData
     search?: SearchEntity
@@ -36,6 +37,7 @@ const props = withDefaults(
   {
     title: '',
     subTitle: '',
+    img: '/album.jpeg',
     playlist: undefined,
     track: undefined,
     search: undefined

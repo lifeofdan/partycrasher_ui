@@ -13,34 +13,24 @@ const routes: RouteRecordRaw[] = [
     path: '/app',
     component: async () => await import('layouts/MainLayout.vue'),
     children: [
-      { name: 'app.profile', path: 'profile', meta: { title: 'Profile' }, component: async () => await import('pages/profile/ProfilePage.vue') },
+      {
+        name: 'app.profile',
+        path: 'profile',
+        meta: { title: 'Profile' },
+        component: async () => await import('pages/profile/ProfilePage.vue')
+      },
       {
         name: 'app.tracks',
         path: 'tracks',
         meta: { title: 'Tracks' },
-        component: async () => await import('pages/TracksPage.vue'),
-        children: [
-          {
-            component: async () => await import('pages/tracks/TrackPage.vue'),
-            name: 'app.track',
-            path: ':id',
-            meta: { title: 'Track', child: true }
-          }
-        ]
+        component: async () => await import('pages/TracksIndexPage.vue')
+
       },
       {
-        name: 'app.albums',
-        path: 'albums',
-        meta: { title: 'Albums' },
-        component: async () => await import('pages/TracksPage.vue'),
-        children: [
-          {
-            component: async () => await import('pages/tracks/TrackPage.vue'),
-            name: 'app.album',
-            path: ':id',
-            meta: { title: 'Album', child: true }
-          }
-        ]
+        component: async () => await import('pages/tracks/TrackPage.vue'),
+        name: 'app.track',
+        path: 'tracks/:id',
+        meta: { title: 'Track', child: true }
       },
       {
         name: 'app.search',
@@ -49,7 +39,7 @@ const routes: RouteRecordRaw[] = [
         component: async () => await import('pages/SearchPage.vue')
       },
       {
-        component: async () => await import('pages/PlaylistsPage.vue'),
+        component: async () => await import('pages/PlaylistsIndexPage.vue'),
         name: 'app.playlists',
         path: 'playlists',
         meta: { title: 'Playlists' },
@@ -61,6 +51,18 @@ const routes: RouteRecordRaw[] = [
             meta: { title: 'Playlist', child: true }
           }
         ]
+      },
+      {
+        component: async () => await import('pages/AlbumsIndexPage.vue'),
+        name: 'app.albums',
+        path: 'albums',
+        meta: { title: 'Albums' }
+      },
+      {
+        component: async () => await import('pages/albums/AlbumPage.vue'),
+        name: 'app.album',
+        path: 'albums/:id',
+        meta: { title: 'Album', child: true }
       }
     ]
   },

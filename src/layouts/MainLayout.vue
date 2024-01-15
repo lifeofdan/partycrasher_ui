@@ -24,7 +24,7 @@
     </q-header>
 
     <q-footer class="bg-transparent">
-      <MusicPlayer v-show="musicPlayerStore.state.showPlayer" />
+      <MusicPlayer />
       <q-tabs
         no-caps
         active-color="primary"
@@ -36,16 +36,19 @@
           v-if="me?.role === 'admin'"
           :to="{name: 'app.playlists'}"
           label="Playlists"
-          icon="play_circle"
+          icon="playlist_play"
         />
         <q-route-tab
-          v-if="me?.role === 'admin' || me?.role === 'user'"
+          :to="{name:'app.albums'}"
+          label="Albums"
+          icon="album"
+        />
+        <q-route-tab
           :to="{name:'app.tracks'}"
           label="Tracks"
           icon="queue_music"
         />
         <q-route-tab
-          v-if="me?.role === 'admin' || me?.role === 'user'"
           :to="{name:'app.search'}"
           label="Search"
           icon="search"

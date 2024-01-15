@@ -21,6 +21,10 @@ export const useAuthStore = defineStore('auth', () => {
       return me.value ?? response.message
     },
     fetchMe: async (): Promise<IGetMeData | string> => {
+      if (me.value !== null) {
+        return me.value
+      }
+
       const response = await api.getMe()
 
       if (response.success) {

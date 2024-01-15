@@ -1,10 +1,12 @@
 import { defineStore } from 'pinia'
-import { makeAlbumClient } from 'src/api/entity_api/album'
+import { AlbumEntity, makeAlbumClient } from 'src/api/entity_api/album'
+import { makeMediaClient } from 'src/api/entity_api/media'
 import { TrackEntity } from 'src/api/entity_api/track'
 import { reactive, ref } from 'vue'
 
 export const useAlbumsStore = defineStore('albums', () => {
   const albumClient = makeAlbumClient()
+  const mediaClient = makeMediaClient()
 
   const tracks = ref<TrackEntity[]>([])
 
@@ -17,6 +19,10 @@ export const useAlbumsStore = defineStore('albums', () => {
       }
 
       return tracks.value
+    },
+    coverArt (album: AlbumEntity): string {
+      const art = album.metadata.pictures?.cover_art_front
+      return (art !== null) ? mediaClient.byId(art as string) : '/album.jpeg'
     }
   }
 

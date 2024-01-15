@@ -20,7 +20,7 @@ export class BaseEntity {
     return await response.json()
   }
 
-  public async doGetBlob (to: string | null): Promise<Blob> {
+  protected async doGetBlob (to: string | null): Promise<Blob> {
     const url = this.endpoint + (typeof to === 'string' ? to : '')
     const response = await fetch(`${url}`, makeRequestInit('GET'))
     return await response.blob()
